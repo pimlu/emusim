@@ -14,14 +14,14 @@ class Process {
 public:
     Process(int memory);
     virtual ~Process() {}
-    virtual Syscall* run(int n, Sysres *res) = 0;
+    virtual Syscall* run(int &c, Sysres *res) = 0;
     int memory;
 };
 
 class DummyProcess : public Process {
 public:
     DummyProcess(int memory);
-    Syscall* run(int n, Sysres *res) override;
+    Syscall* run(int &c, Sysres *res) override;
 };
 
 }
