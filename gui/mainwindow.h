@@ -5,12 +5,15 @@
 #include <QWidget>
 #include <QPushButton>
 
+#include "systemthread.h"
+
 namespace gui {
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
+    SystemThread *mainThread = nullptr;
 private slots:
     void handleButton();
 private:

@@ -1,5 +1,7 @@
 #include "scheduler.h"
 
+#include <iostream>
+
 namespace sim {
 
 Scheduler::Scheduler(System *system, int memory) :
@@ -7,8 +9,9 @@ Scheduler::Scheduler(System *system, int memory) :
 
 }
 
-void Scheduler::run(int n) {
+void Scheduler::doSim(int n) {
     cycle += n; //does nothing for now
+    std::cout << "Running "<< n << " cycles..." << std::endl;
 }
 
 void Scheduler::add(Process *p) {

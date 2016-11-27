@@ -23,7 +23,7 @@ public:
     int memory, used = 0;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
-    void run(int n);
+    void doSim(int n);
     void add(sim::Process *p);
 };
 
