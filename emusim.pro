@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     sim/scheduler.cpp \
     sim/process.cpp \
     sim/system.cpp \
-    sim/filesystem.cpp
+    sim/filesystem.cpp \
+    emu/emuprocess.cpp
 
 HEADERS += \
     gui/mainwindow.h \
@@ -23,4 +24,5 @@ HEADERS += \
     sim/process.h \
     sim/system.h \
     sim/syscalls.h \
-    sim/filesystem.h
+    sim/filesystem.h \
+    emu/emuprocess.h
