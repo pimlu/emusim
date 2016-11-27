@@ -13,10 +13,10 @@ struct SCEnd : Syscall {
     int retCode;
 };
 struct SCRead : Syscall {
-    SCRead(char *file, int len, int seek) :
-        Syscall(Type::READ), file(file), len(len), seek(seek) {}
+    SCRead(char *file, int seek, int len) :
+        Syscall(Type::READ), file(file), seek(seek), len(len) {}
     char *file;
-    int len, seek;
+    int seek, len;
 };
 
 struct Sysres {

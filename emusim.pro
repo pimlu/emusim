@@ -14,11 +14,13 @@ SOURCES += main.cpp \
     gui/mainwindow.cpp \
     sim/scheduler.cpp \
     sim/process.cpp \
-    sim/system.cpp
+    sim/system.cpp \
+    sim/filesystem.cpp
 
 HEADERS += \
     gui/mainwindow.h \
     sim/scheduler.h \
     sim/process.h \
     sim/system.h \
-    sim/syscalls.h
+    sim/syscalls.h \
+    sim/filesystem.h
