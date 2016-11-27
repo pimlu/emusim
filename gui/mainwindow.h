@@ -5,10 +5,9 @@
 #include <QWidget>
 #include <QPushButton>
 
-namespace UI {
+namespace gui {
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -21,5 +20,7 @@ signals:
 
 public slots:
 };
+
 }
+
 #endif // MAINWINDOW_H

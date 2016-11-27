@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-namespace UI {
+namespace gui {
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     setFixedSize(300,400);

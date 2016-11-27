@@ -11,7 +11,14 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    ui/mainwindow.cpp
+    gui/mainwindow.cpp \
+    sim/scheduler.cpp \
+    sim/process.cpp \
+    sim/system.cpp
 
 HEADERS += \
-    ui/mainwindow.h
+    gui/mainwindow.h \
+    sim/scheduler.h \
+    sim/process.h \
+    sim/system.h \
+    sim/syscalls.h
