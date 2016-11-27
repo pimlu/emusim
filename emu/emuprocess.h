@@ -9,6 +9,7 @@ class EmuProcess : public sim::Process
 {
 public:
     EmuProcess(char *ram, int len);
+    Syscall* run(int n, Sysres *res) override;
     char *ram;
 };
 

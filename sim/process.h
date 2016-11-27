@@ -21,7 +21,7 @@ public:
 class DummyProcess : public Process {
 public:
     DummyProcess(int memory);
-    Syscall* run(int n, Sysres *res);
+    Syscall* run(int n, Sysres *res) override;
 };
 
 }

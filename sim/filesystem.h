@@ -14,6 +14,7 @@ public:
     FileSystem(string path);
     string path;
     //reads len bytes at index seek of the file.  so it reads [seek, seek+len)
+    //it will be the caller's responsibility to delete the returned pointer, not FileSystem
     char* readFile(string name, int seek, int len);
     //writes to [seek, seek+len) with the characters from *data
     //if the file does not exist, creates it.  returns whether file was created
