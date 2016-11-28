@@ -52,6 +52,10 @@ class EmuProcess : public Process
         short EX, IA;
     };
 
+    short readNextWord() { return ram[registers.PC++]; }
+
+    int convertToValue(int v, bool b);
+
     public:
         EmuProcess(char *ram, int len);
         Syscall* run(int &c, Sysres *res) override;
