@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
     mainWindow.show();
 
     // Temporary until we have File IO added
+    // Fibonaci Calcutator, calculates n = 20 and stores it in register A
+    // https://gist.github.com/ehaliewicz/2523345
    unsigned char memory[] = { 0x01, 0x84, 0x21, 0x88, 0x41, 0xd4, 0x52, 0x84,
                               0x81, 0x7f, 0x0d, 0x00, 0x61, 0x00, 0x62, 0x04,
                               0x01, 0x04, 0x21, 0x0c, 0x43, 0x88, 0x81, 0x7f,

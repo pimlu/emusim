@@ -76,7 +76,7 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
 
             // [next word]
              case 0x1e:
-                *out = ram[(unsigned short) readNextWord()];
+                out = &ram[(unsigned short) readNextWord()];
                 return out;
 
             // next word (literal)
