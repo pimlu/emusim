@@ -5,16 +5,27 @@
 
 namespace sim {
 
-enum Type { NONE, END, READ};
+enum Type {
+    NONE, END, PRINT, INPUT,
+    PRINTN, INPUTN, READ, WRITE,
+    IORES
+};
 
 struct Syscall {
     Syscall(Type type) : type(type) {}
     Type type;
 };
-struct SCEnd : Syscall {
-    SCEnd(int retCode) : Syscall(Type::END), retCode(retCode) {}
-    int retCode;
+struct SCInt : Syscall {
+    SCInt(Type t, int val) : Syscall(t), val(val) {}
+    int val;
 };
+
+struct SCString : Syscall {
+    SCString(Type t, char *str, int len) : Syscall(t), str(str), len(len) {}
+    char *str;
+    int len;
+};
+
 struct SCRead : Syscall {
     SCRead(char *file, int seek, int len) :
         Syscall(Type::READ), file(file), seek(seek), len(len) {}
@@ -22,14 +33,28 @@ struct SCRead : Syscall {
     int seek, len;
 };
 
+struct SCWrite : Syscall {
+    SCWrite(char *file, int seek, char *data, int len) :
+        Syscall(Type::WRITE), file(file), seek(seek), data(data), len(len) {}
+    char *file;
+    int seek;
+    char *data;
+    int len;
+};
+
 struct Sysres {
     Type type;
     Sysres(Type type) : type(type) {}
 };
 
-struct SRRead : Sysres {
-    SRRead(char* text, int len) :
-        Sysres(Type::READ), text(text), len(len) {}
+struct SRInt : Sysres {
+    SRInt(Type t, int val) : Sysres(t), val(val) {}
+    int val;
+};
+
+struct SRString : Sysres {
+    SRString(Type t, char* text, int len) :
+        Sysres(t), text(text), len(len) {}
     char *text;
     int len;
 };

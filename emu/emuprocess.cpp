@@ -1,5 +1,7 @@
 #include "emuprocess.h"
 
+#include <cstdio>
+
 /*
  * Emulator for DCPU-16
  * https://raw.githubusercontent.com/gatesphere/demi-16/master/docs/dcpu-specs/dcpu-1-7.txt

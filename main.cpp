@@ -20,10 +20,10 @@ int main(int argc, char *argv[])
     mainWindow.show();
 
     // Temporary until we have File IO added
-   char memory[] = { 0x02, 0x88, 0x00, 0x7d, 0x01, 0x00 };
+   unsigned char memory[] = { 0x02, 0x88, 0x00, 0x7d, 0x01, 0x00 };
    int cycles = 5;
 
-   emu::EmuProcess emu(memory, sizeof(memory));
+   emu::EmuProcess emu((char*) memory, sizeof(memory));
    emu.run(cycles, new sim::Sysres(sim::Type::NONE));
    // ---
 
