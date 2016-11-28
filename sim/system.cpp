@@ -2,21 +2,17 @@
 
 namespace sim {
 
-System::System(int memory, std::istream &in, std::ostream &out) : in(in), out(out) {
-    sched = new Scheduler(this, memory);
+System::System(int memory, int quantum, std::istream &in, std::ostream &out) : in(in), out(out) {
+    sched = new Scheduler(this, memory, quantum);
 }
 
 System::~System() {
     delete sched;
 }
 
-bool System::pollBlocked(int c) {
+bool System::run(int c) {
     spentCycles += c;
     return false;
-}
-
-Sysres* System::getRes() {
-    return nullptr;
 }
 
 }

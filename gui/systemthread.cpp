@@ -17,7 +17,7 @@ void SystemThread::tRun() {
     while(true) {
         while(paused) cv.wait(lck); //locks until ran
         steady_clock::time_point time = steady_clock::now();
-        system->sched->doSim(hz/PERIOD); //does cycles, then sleeps till next period
+        system->sched->doSim(hz/PERIOD, paused); //does cycles, then sleeps till next period
         std::this_thread::sleep_until(time + std::chrono::milliseconds(1000/PERIOD));
     }
 }

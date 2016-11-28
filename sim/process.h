@@ -9,6 +9,7 @@ namespace sim { class Process; class DummyProcess; }
 namespace sim {
 
 using ProcCall = std::pair<Process*, Syscall*>;
+using ProcRes = std::pair<Process*, Sysres*>;
 
 class Process {
 public:

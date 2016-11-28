@@ -11,13 +11,13 @@ namespace sim {
 
 class System {
 public:
-    System(int memory, std::istream &in, std::ostream &out);
+    System(int memory, int quantum, std::istream &in, std::ostream &out);
     ~System();
     std::istream &in;
     std::ostream &out;
     std::queue<ProcCall> blockQueue; //blocked - syscall result (usually IO)
-    bool pollBlocked(int c); //passes time for the system, returns true if an entry finished
-    Sysres *getRes(); //gets syscall result for finished blocked ProcCall (null if !pollBlocked)
+    std::queue<ProcRes> finishQueue; //processes ready to be put in the waiting queue
+    bool run(int c); //passes time for the system, returns true if an entry finished
     int spentCycles = 0; //how far along in the blockQueue we are
     Scheduler *sched;
 };
