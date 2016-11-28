@@ -117,7 +117,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         printf("Word: \t\t 0x%hx\n", word);
 
         opcode = word & WORD_OPCODE_MASK;
-        b = (word & WORD_B_MASK) >> WORD_OPCODE_LENGTH;
+        b = (word & WORD_B_MASK) >> (WORD_OPCODE_LENGTH);
         a = (word & WORD_A_MASK) >> (WORD_B_LENGTH + WORD_OPCODE_LENGTH);
 
         // We have a special opcode
@@ -134,6 +134,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         b_ptr = convertToValue(b, true, &b_value);
 
         printf("Values: \t\t a: 0x%hx \t b: 0x%hx \t \n", *a_ptr, *b_ptr);
+        printf("-----\n");
 
         if(!skip_instruction)
         {
@@ -166,14 +167,14 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                     goto END;
 
                 default:
-                    printf("Instruction: \t 0x%hx (unknowned)\n", opcode);
+                    printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
                     break;
             }
         }
         else skip_instruction = false;
 
         printRegisters();
-        printf("Local Cycle: %d\n\n", i + 1);
+        printf("Local Cycle: \t %d\n\n", i + 1);
     }
 
     END:
