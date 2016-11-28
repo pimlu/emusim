@@ -67,8 +67,8 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
 
             // PC
             case 0x1c:
-                *out = registers.PC;
-                return &registers.PC;
+                out = &registers.PC;
+                return out;
 
             // EX
             case 0x1d:
