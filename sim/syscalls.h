@@ -3,8 +3,11 @@
 
 //data protocol between processes and System.
 
+namespace sim {
+
+enum Type { NONE, END, READ};
+
 struct Syscall {
-    enum Type { NONE, END, READ };
     Syscall(Type type) : type(type) {}
     Type type;
 };
@@ -20,7 +23,6 @@ struct SCRead : Syscall {
 };
 
 struct Sysres {
-    enum Type { NONE, READ};
     Type type;
     Sysres(Type type) : type(type) {}
 };
@@ -31,5 +33,7 @@ struct SRRead : Sysres {
     char *text;
     int len;
 };
+
+}
 
 #endif // SYSCALLS_H

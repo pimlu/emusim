@@ -5,12 +5,15 @@
 
 namespace emu {
 
-class EmuProcess : public sim::Process
+using namespace sim;
+
+class EmuProcess : public Process
 {
 public:
     EmuProcess(char *ram, int len);
     Syscall* run(int &c, Sysres *res) override;
     char *ram;
+    Type lastCall = Type::NONE;
 };
 
 }
