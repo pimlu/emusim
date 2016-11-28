@@ -33,7 +33,7 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
     // [register + next word]
     else if(0x10 <= v && v <= 0x17)
     {
-        unsigned short addr = ((short*)&registers)[v - 0x08];
+        unsigned short addr = ((short*)&registers)[v - 0x10];
         addr += readNextWord();
         return &ram[addr];
     }
