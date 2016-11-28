@@ -68,7 +68,7 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
             // PC
             case 0x1c:
                 *out = registers.PC;
-                return out;
+                return &registers.PC;
 
             // EX
             case 0x1d:
@@ -135,44 +135,51 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
 
         printf("Values: \t\t a: 0x%hx \t b: 0x%hx \t \n", *a_ptr, *b_ptr);
 
-        // Handle the opcode
-        switch(opcode)
+        if(!skip_instruction)
         {
-            case Opcodes::SET:
-                printf("Instruction: \t SET\n");
-                *b_ptr = *a_ptr;
-                break;
+            // Handle the opcode
+            switch(opcode)
+            {
+                case Opcodes::SET:
+                    printf("Instruction: \t SET\n");
+                    *b_ptr = *a_ptr;
+                    break;
 
-            case Opcodes::ADD:
-                printf("Instruction: \t ADD\n");
-                *b_ptr += *a_ptr;
-                break;
+                case Opcodes::ADD:
+                    printf("Instruction: \t ADD\n");
+                    *b_ptr += *a_ptr;
+                    break;
 
-            case Opcodes::SUB:
-                printf("Instruction: \t SUB\n");
-                *b_ptr -= *a_ptr;
-                break;
+                case Opcodes::SUB:
+                    printf("Instruction: \t SUB\n");
+                    *b_ptr -= *a_ptr;
+                    break;
 
-            case SpecialOpcodes::INT:
-                printf("Instruction: \t INT\n");
-                lastCall = static_cast<Type>(a);
-                goto END;
+                case Opcodes::IFE:
+                    printf("Instruction: \t IFE\n");
+                    if(*a_ptr != *b_ptr) skip_instruction = true;
+                    break;
 
-            default:
-                printf("Instruction: \t 0x%hx (unknowned)\n", opcode);
-                break;
+                case SpecialOpcodes::INT:
+                    printf("Instruction: \t INT\n");
+                    lastCall = static_cast<Type>(a);
+                    goto END;
+
+                default:
+                    printf("Instruction: \t 0x%hx (unknowned)\n", opcode);
+                    break;
+            }
         }
+        else skip_instruction = false;
+
         printRegisters();
-        printf("\n");
+        printf("Local Cycle: %d\n\n", i + 1);
     }
 
     END:
 
     //then finish with a syscall
     Syscall *ret = new Syscall(lastCall);
-
-    //then make sure our state is set up for when we resume
-    //lastCall = ret->type;
 
     return ret;
 }
