@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     mainWindow.show();
 
     // Temporary until we have File IO added
-   unsigned char memory[] = { 0x02, 0x88, 0x00, 0x7d, 0x01, 0x00 };
+   unsigned char memory[] = { 0x01, 0x7c, 0x64, 0x00, 0x02, 0xac, 0x22, 0x00, 0x00, 0x7d, 0x01, 0x00 };
    int cycles = 5;
 
    emu::EmuProcess emu((char*) memory, sizeof(memory));

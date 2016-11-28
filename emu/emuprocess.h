@@ -3,6 +3,8 @@
 
 #include "../sim/process.h"
 
+#include <cstdio>
+
 namespace emu {
 
 using namespace sim;
@@ -54,7 +56,12 @@ class EmuProcess : public Process
 
     short readNextWord() { return ram[registers.PC++]; }
 
-    int convertToValue(int v, bool b);
+    short* convertToValue(int v, bool b, short* out);
+
+    void printRegisters()
+    {
+        printf("A: %d \t B: %d \t C: %d \t X: %d \t Y: %d \t Z: %d \t I: %d \t J: %d \n", registers.A, registers.B, registers.C, registers.X, registers.Y, registers.Z, registers.I, registers.J);
+    }
 
     public:
         EmuProcess(char *ram, int len);

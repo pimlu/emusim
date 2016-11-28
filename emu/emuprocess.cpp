@@ -19,30 +19,31 @@ EmuProcess::EmuProcess(char *ram, int len) : Process(len), ram((short*) ram) {
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 // b => true, if finding value for 'b', otherwise we're finding value for 'a'
-int EmuProcess::convertToValue(int v, bool b)
+short* EmuProcess::convertToValue(int v, bool b, short* out)
 {
     // register (A, B, C, X, Y, Z, I or J, in that order)
     if(0x00 <= v && v <= 0x07)
     {
-        return (int) ((short*) &registers)[v];
+        return &((short*) &registers)[v];
     }
     // [register]
     else if(0x08 <= v && v <= 0x0f)
     {
-        int addr = (int) ((short*) &registers)[v - 0x08];
-        return (int) ram[addr];
+        unsigned short addr = ((short*)&registers)[v - 0x08];
+        return &ram[addr];
     }
     // [register + next word]
     else if(0x10 <= v && v <= 0x17)
     {
-        int addr = (int)((short*)&registers)[v - 0x10];
+        unsigned short addr = ((short*)&registers)[v - 0x10];
         addr += readNextWord();
-        return (int) ram[addr];
+        return &ram[addr];
     }
     // literal value 0xffff-0x1e (-1..30) (literal) (only for a)
     else if(0x20 <= v && v <= 0x3f && !b)
     {
-        return (int) (v - 0x21);
+        *out = (v - 0x21);
+        return out;
     }
     else
     {
@@ -66,7 +67,8 @@ int EmuProcess::convertToValue(int v, bool b)
 
             // PC
             case 0x1c:
-                return registers.PC;
+                *out = registers.PC;
+                return out;
 
             // EX
             case 0x1d:
@@ -74,14 +76,16 @@ int EmuProcess::convertToValue(int v, bool b)
 
             // [next word]
              case 0x1e:
-                return ram[(unsigned short) readNextWord()];
+                *out = ram[(unsigned short) readNextWord()];
+                return out;
 
             // next word (literal)
             case 0x1f:
-                return readNextWord();
+                *out = readNextWord();
+                return out;
         }
     }
-    return 0;
+    return out;
 }
 
 Syscall* EmuProcess::run(int &c, Sysres *res)
@@ -101,13 +105,16 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
 
     //run up to c emulation cycles, counting c as a reference down to 0...
     int word;
-    int opcode, a, b, value;
+    int opcode, a, b;
+
+    short a_value = 0, b_value = 0;
+    short *a_ptr, *b_ptr;
 
     for(int i = 0; i < c; i++)
     {
         word = readNextWord();
 
-        printf("Word: 0x%hx\n", word);
+        printf("Word: \t\t 0x%hx\n", word);
 
         opcode = word & WORD_OPCODE_MASK;
         b = (word & WORD_B_MASK) >> WORD_OPCODE_LENGTH;
@@ -120,34 +127,47 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
             b = 0;
         }
 
-        printf("Opcode: 0x%hx, a: 0x%hx, b: 0x%hx, \n", opcode, a, b);
+        printf("Opcode: \t 0x%hx \t a: 0x%hx \t b: 0x%hx \n", opcode, a, b);
 
         // Convert a and b to proper value using value table
-        a = convertToValue(a, false);
-        b = convertToValue(b, true);
+        a_ptr = convertToValue(a, false, &a_value);
+        b_ptr = convertToValue(b, true, &b_value);
 
-         printf("Converted values: a: 0x%hx, b: 0x%hx, \n", opcode, a, b);
+        printf("Values: \t\t a: 0x%hx \t b: 0x%hx \t \n", *a_ptr, *b_ptr);
 
         // Handle the opcode
         switch(opcode)
         {
+            case Opcodes::SET:
+                printf("Instruction: \t SET\n");
+                *b_ptr = *a_ptr;
+                break;
+
             case Opcodes::ADD:
-                printf("Performing ADD operation\n");
+                printf("Instruction: \t ADD\n");
+                *b_ptr += *a_ptr;
+                break;
+
+            case Opcodes::SUB:
+                printf("Instruction: \t SUB\n");
+                *b_ptr -= *a_ptr;
                 break;
 
             case SpecialOpcodes::INT:
-                printf("Performing INT operation\n");
+                printf("Instruction: \t INT\n");
                 lastCall = static_cast<Type>(a);
                 goto END;
 
             default:
-                printf("Unimplemeted opcode: %04X\n", opcode);
+                printf("Instruction: \t 0x%hx (unknowned)\n", opcode);
                 break;
         }
+        printRegisters();
         printf("\n");
     }
 
     END:
+
     //then finish with a syscall
     Syscall *ret = new Syscall(lastCall);
 
