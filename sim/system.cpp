@@ -11,14 +11,55 @@ System::~System() {
 }
 
 bool System::run(int c) {
-    static int costs[] = {0};
-    if(blockQueue.empty()) {
-        spentCycles = 0;
-        return false;
-    }
-    ProcCall req = blockQueue.front();
+    /*
+enum Type {
+    NONE, END, PRINT, INPUT,
+    PRINTN, INPUTN, READ, WRITE,
+    IORES
+};
+*/
+    bool finished = false;
+    cycles += c;
+    while(cycles > 0) {
+        if(blockQueue.empty()) {
+            cycles = 0;
+            goto velociraptor;
+        }
 
-    return false;
+        ProcCall req = blockQueue.front();
+        Syscall *sc = req.second;
+        ProcRes res(req.first, nullptr);
+        //we use blocks inside cases to avoid jumping over initialization
+        switch(req.second->type) {
+            case Type::NONE:
+
+                break;
+            case Type::END:
+                {SCInt *sci = (SCInt*) sc;
+                if(cycles<5) goto velociraptor;
+                cycles -= 5;
+
+                res.first = nullptr;
+                //TODO: do something with return code
+
+                }break;
+            case Type::PRINT:
+                {SCString *scs = (SCString*) sc;
+                if(cycles<scs->len) goto velociraptor;
+                cycles -= scs->len;
+
+                out.write(scs->str, scs->len);
+                res.second = new SRInt(Type::IORES, true);
+
+                }break;
+        }
+        blockQueue.pop();
+        delete sc;
+        if(res.first) finishQueue.push(res);
+    }
+
+    velociraptor:
+    return finished;
 }
 
 }

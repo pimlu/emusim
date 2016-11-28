@@ -18,7 +18,7 @@ public:
     std::queue<ProcCall> blockQueue; //blocked - syscall result (usually IO)
     std::queue<ProcRes> finishQueue; //processes ready to be put in the waiting queue
     bool run(int c); //passes time for the system, returns true if an entry finished
-    int spentCycles = 0; //how far along in the blockQueue we are
+    int cycles = 0; //how far along in the blockQueue we are
     Scheduler *sched;
 };
 

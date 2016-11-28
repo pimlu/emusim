@@ -5,6 +5,7 @@
 
 namespace sim {
 
+//make sure these align with the costs in system.cpp
 enum Type {
     NONE, END, PRINT, INPUT,
     PRINTN, INPUTN, READ, WRITE,
