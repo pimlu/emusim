@@ -10,10 +10,9 @@ Scheduler::Scheduler(System *system, int memory, int quantum) :
 }
 
 void Scheduler::doSim(int n, bool &paused) {
-    cycle += n; //does nothing for now
+    int totalSim = 0;
     system->out << "Running "<< n << " cycles..." << std::endl;
-    while(!paused) {
-        int prevCycles = cyclesLeft;
+    while(!paused && totalSim < n) {
         bool empty = waitQueue.empty();
         if(cyclesLeft <= 0) {
             cyclesLeft = quantum;
@@ -22,6 +21,7 @@ void Scheduler::doSim(int n, bool &paused) {
                 waitQueue.pop();
             }
         }
+        int prevCycles = cyclesLeft;
         //spend time running a process if we have one
         Process *proc = curProc.first;
         if(proc) {
@@ -33,8 +33,11 @@ void Scheduler::doSim(int n, bool &paused) {
                 system->blockQueue.push(ProcCall(proc, call));
             }
         } else cyclesLeft = 0;
+        int spent = prevCycles - cyclesLeft;
+        system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
-        system->run(prevCycles - cyclesLeft);
+        system->run(spent);
+        totalSim += spent;
         //check its results into the waiting queue
         while(!system->finishQueue.empty()) {
             waitQueue.push(system->finishQueue.front());

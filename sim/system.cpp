@@ -11,7 +11,13 @@ System::~System() {
 }
 
 bool System::run(int c) {
-    spentCycles += c;
+    static int costs[] = {0};
+    if(blockQueue.empty()) {
+        spentCycles = 0;
+        return false;
+    }
+    ProcCall req = blockQueue.front();
+
     return false;
 }
 

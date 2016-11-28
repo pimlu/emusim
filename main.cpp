@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    sim::System *mainSystem = new sim::System(65536, 500, std::cin, std::cout);
+    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout);
     gui::SystemThread *mainThread = new gui::SystemThread(mainSystem, 10000);
 
     gui::MainWindow mainWindow;
