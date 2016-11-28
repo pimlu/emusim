@@ -18,12 +18,12 @@ enum Type {
     IORES
 };
 */
-    bool finished = false;
+    bool ret = false;
     cycles += c;
     while(cycles > 0) {
         if(blockQueue.empty()) {
             cycles = 0;
-            goto velociraptor;
+            return ret;
         }
 
         ProcCall req = blockQueue.front();
@@ -36,7 +36,7 @@ enum Type {
                 break;
             case Type::END:
                 {SCInt *sci = (SCInt*) sc;
-                if(cycles<5) goto velociraptor;
+                if(cycles<5) return ret;
                 cycles -= 5;
 
                 res.first = nullptr;
@@ -45,7 +45,7 @@ enum Type {
                 }break;
             case Type::PRINT:
                 {SCString *scs = (SCString*) sc;
-                if(cycles<scs->len) goto velociraptor;
+                if(cycles<scs->len) return ret;
                 cycles -= scs->len;
 
                 out.write(scs->str, scs->len);
@@ -53,13 +53,14 @@ enum Type {
 
                 }break;
         }
+
+        ret = true;
         blockQueue.pop();
         delete sc;
         if(res.first) finishQueue.push(res);
     }
 
-    velociraptor:
-    return finished;
+    return ret;
 }
 
 }
