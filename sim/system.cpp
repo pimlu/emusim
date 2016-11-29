@@ -2,8 +2,8 @@
 
 namespace sim {
 
-System::System(int memory, int quantum, std::istream &in, std::ostream &out) : in(in), out(out) {
-    sched = new Scheduler(this, memory, quantum);
+System::System(int memory, int quantum, std::istream &in, std::ostream &out) : memory(memory), in(in), out(out) {
+    sched = new Scheduler(this, quantum);
 }
 
 System::~System() {
@@ -39,6 +39,7 @@ enum Type {
                 if(cycles<5) return ret;
                 cycles -= 5;
 
+                usedMem -= res.first->memory;
                 res.first = nullptr;
                 //TODO: do something with return code
 

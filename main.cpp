@@ -7,12 +7,16 @@
 
 #include "sim/syscalls.h"
 #include "emu/emuprocess.h"
+#include "sim/process.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    sim::Process *p = new sim::DummyProcess(200);
     sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout);
+    mainSystem->sched->add(p);
+
     gui::SystemThread *mainThread = new gui::SystemThread(mainSystem, 10000);
 
     gui::MainWindow mainWindow;

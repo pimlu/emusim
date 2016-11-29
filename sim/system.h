@@ -13,6 +13,7 @@ class System {
 public:
     System(int memory, int quantum, std::istream &in, std::ostream &out);
     ~System();
+    int memory, usedMem=0;
     std::istream &in;
     std::ostream &out;
     std::queue<ProcCall> blockQueue; //blocked - syscall result (usually IO)

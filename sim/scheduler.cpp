@@ -4,8 +4,8 @@
 
 namespace sim {
 
-Scheduler::Scheduler(System *system, int memory, int quantum) :
-    system(system), memory(memory), quantum(quantum) {
+Scheduler::Scheduler(System *system, int quantum) :
+    system(system), quantum(quantum) {
 
 }
 
@@ -13,6 +13,12 @@ void Scheduler::doSim(int n, bool &paused) {
     int totalSim = 0;
     system->out << "Running "<< n << " cycles..." << std::endl;
     while(!paused && totalSim < n) {
+        while(!jobQueue.empty() && jobQueue.front()->memory <= system->memory - system->usedMem) {
+            Process *proc = jobQueue.front();
+            system->usedMem += proc->memory;
+            waitQueue.push(ProcRes(proc, new Sysres(Type::NONE)));
+            jobQueue.pop();
+        }
         bool empty = waitQueue.empty();
         if(cyclesLeft <= 0) {
             cyclesLeft = quantum;

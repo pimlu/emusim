@@ -19,7 +19,7 @@ class Scheduler {
     ProcRes curProc; //current active process
     int cyclesLeft = 0; //cycles left before it context switches
 public:
-    Scheduler(System *system, int memory, int quantum);
+    Scheduler(System *system, int quantum);
     int memory, used = 0, quantum;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
