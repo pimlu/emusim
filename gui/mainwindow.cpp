@@ -5,6 +5,7 @@
 #include "sim/process.h"
 
 #include <stdexcept>
+#include <string>
 
 namespace gui {
 
@@ -42,11 +43,21 @@ void MainWindow::handleSendCommand()
 
     log(">" + m_commandInput->text());
 
-    QString command = m_commandInput->text().toLower();
+    QStringList line = m_commandInput->text().split(" ");
+    m_commandInput->setText("");
+    if(line.size() == 0) return;
+    QString command = line[0].toLower();
 
     if(command == "exec")
     {
-        log("Currently unimplemented, use EMU_TEST in the meantime.");
+        if(line.size() < 2) {
+            log("No file given; run `exec fileName`");
+        } else {
+            std::string file = line[1].toUtf8().constData();
+            int pid = mainThread->exec(file);
+            log(QString::fromStdString(pid == -1 ? "File "+file+"not found." : "Running "+
+                             file+" as PID "+std::to_string(pid)+"."));
+        }
     }
     else if(command == "emu_test")
     {
@@ -74,7 +85,7 @@ void MainWindow::handleSendCommand()
 
         // Create process and schedule it
         emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, sizeof(memory));
-        mainThread->system->sched->add(emu);
+        mainThread->add(emu, "emu");
 
         log("Scheduled emu test program");
     }
@@ -87,7 +98,6 @@ void MainWindow::handleSendCommand()
         log("Unrecognized command: " + command);
     }
 
-    m_commandInput->setText("");
 }
 
 }

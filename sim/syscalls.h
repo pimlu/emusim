@@ -22,24 +22,24 @@ struct SCInt : Syscall {
 };
 
 struct SCString : Syscall {
-    SCString(Type t, char *str, int len) : Syscall(t), str(str), len(len) {}
-    char *str;
+    SCString(Type t, const char *str, int len) : Syscall(t), str(str), len(len) {}
+    const char *str;
     int len;
 };
 
 struct SCRead : Syscall {
-    SCRead(char *file, int seek, int len) :
+    SCRead(const char *file, int seek, int len) :
         Syscall(Type::READ), file(file), seek(seek), len(len) {}
-    char *file;
+    const char *file;
     int seek, len;
 };
 
 struct SCWrite : Syscall {
-    SCWrite(char *file, int seek, char *data, int len) :
+    SCWrite(const char *file, int seek, const char *data, int len) :
         Syscall(Type::WRITE), file(file), seek(seek), data(data), len(len) {}
-    char *file;
+    const char *file;
     int seek;
-    char *data;
+    const char *data;
     int len;
 };
 
@@ -54,9 +54,9 @@ struct SRInt : Sysres {
 };
 
 struct SRString : Sysres {
-    SRString(Type t, char* text, int len) :
+    SRString(Type t, const char* text, int len) :
         Sysres(t), text(text), len(len) {}
-    char *text;
+    const char *text;
     int len;
 };
 

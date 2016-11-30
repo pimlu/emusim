@@ -11,7 +11,7 @@ Scheduler::Scheduler(System *system, int quantum) :
 
 void Scheduler::doSim(int n, bool &paused) {
     int totalSim = 0;
-    system->out << "Running "<< n << " cycles..." << std::endl;
+    //system->out << "Running "<< n << " cycles..." << std::endl;
     while(!paused && totalSim < n) {
         while(!jobQueue.empty() && jobQueue.front()->memory <= system->memory - system->usedMem) {
             Process *proc = jobQueue.front();
@@ -40,19 +40,20 @@ void Scheduler::doSim(int n, bool &paused) {
                 curProc = ProcRes(nullptr, nullptr);
             }
 
-        }
+        } else cyclesLeft = 0;
         int spent = prevCycles - cyclesLeft;
-        pcbs[proc];
+        pcbs[proc].cycles += spent;
         cyclesLeft = 0; //ignores how much they spend for now
-        system->out << "spent "<<spent<<std::endl;
+        if(spent==0) system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
-        system->run(spent);
+        system->runSyscalls(spent);
         totalSim += spent;
         //check its results into the waiting queue
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
             if(res.second->type == Type::END) {
                 pcbs.erase(res.first);
+                delete res.first;
                 memory -= res.first->memory;
                 //TODO react to return code
             } else waitQueue.push_back(res);
@@ -61,9 +62,11 @@ void Scheduler::doSim(int n, bool &paused) {
     }
 }
 
-void Scheduler::add(Process *p) {
+int Scheduler::add(Process *p, std::string name) {
     jobQueue.push_back(p);
     pcbs[p] = PCB();
+    pcbs[p].name = name;
+    return pcbs[p].pid = curpid++;
 }
 
 template <typename T, typename V>
@@ -79,6 +82,16 @@ void Scheduler::remove(Process *p) {
     clearDeque(waitQueue, p);
     clearDeque(system->blockQueue, p);
     clearDeque(system->finishQueue, p);
+}
+void Scheduler::remove(int pid) {
+    remove(find(pid));
+}
+
+Process* Scheduler::find(int pid) {
+    for(auto i : pcbs) {
+        if(i.second.pid == pid) return i.first;
+    }
+    return nullptr;
 }
 
 }

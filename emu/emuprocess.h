@@ -86,6 +86,7 @@ class EmuProcess : public Process
 
     public:
         EmuProcess(char *ram, int len);
+        ~EmuProcess();
         Syscall* run(int &c, Sysres *res) override;
         short *ram;
         Registers registers = {};

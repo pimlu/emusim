@@ -11,8 +11,9 @@ namespace gui {
 
 class SystemThread {
     std::thread *t;
-    std::mutex mtx;
+    std::mutex pausemtx;
     std::condition_variable cv;
+    std::mutex schedmtx;
     void tRun();
     bool paused = true;
 public:
@@ -25,6 +26,12 @@ public:
     void pause();
     bool isPaused();
     bool toggle();
+    int add(sim::Process *p, std::string name);
+    int add(std::string name);
+    void remove(sim::Process *p);
+    void remove(int pid);
+    sim::Process* find(int pid);
+    int exec(std::string name);
 };
 
 }

@@ -15,11 +15,12 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    sim::Process *p = new sim::DummyProcess(200);
-    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout);
-    mainSystem->sched->add(p);
+    //sim::Process *p = new sim::DummyProcess(200);
+    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout, "data");
+
 
     gui::SystemThread *mainThread = new gui::SystemThread(mainSystem, 10000);
+    //mainThread->add(p, "dummy");
 
     gui::MainWindow mainWindow;
     mainWindow.mainThread = mainThread;
@@ -39,7 +40,8 @@ int main(int argc, char *argv[])
         0x00, 0x10, 0x01, 0x7c, 0x00, 0x10, 0x21, 0x88,
         0x00, 0x7d, 0x02, 0x00, 0x00, 0x7d, 0x01, 0x00
     };
-
+    //bool foo = mainSystem->fs.writeFile("fib",0,sizeof program,(char*) program);
+    //std::cout << (foo?"yay":"nay") << std::endl;
     // Hello World, prints "Hello, world!" to the screen
     /*unsigned char program[] =
     {
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
 
     // Create process and schedule it
     emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, sizeof(memory));
-    mainSystem->sched->add(emu);
+    mainThread->add(emu, "emu");
     // ---
 
     /*sim::FileSystem fs("foo");

@@ -12,6 +12,8 @@ namespace sim {
 
 struct PCB {
     unsigned long long cycles, ioreqs, ibytes, obytes;
+    std::string name;
+    int pid;
 };
 
 using std::deque;
@@ -26,12 +28,14 @@ class Scheduler {
     int cyclesLeft = 0; //cycles left before it context switches
 public:
     Scheduler(System *system, int quantum);
-    int memory, used = 0, quantum;
+    int memory, used = 0, quantum, curpid = 1;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
     void doSim(int n, bool &paused);
-    void add(sim::Process *p);
+    int add(sim::Process *p, std::string name);
     void remove(sim::Process *p);
+    void remove(int pid);
+    Process* find(int pid);
 };
 
 }

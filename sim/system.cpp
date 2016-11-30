@@ -1,8 +1,9 @@
 #include "system.h"
-
+#include "../emu/emuprocess.h"
 namespace sim {
 
-System::System(int memory, int quantum, std::istream &in, std::ostream &out) : memory(memory), in(in), out(out) {
+System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path) :
+    fs(path), memory(memory), in(in), out(out) {
     sched = new Scheduler(this, quantum);
 }
 
@@ -11,7 +12,7 @@ System::~System() {
 }
 
 const int IOCOST = 30;
-bool System::run(int c) {
+bool System::runSyscalls(int c) {
     /*
 enum Type {
     NONE, END, PRINT, INPUT,
@@ -92,5 +93,15 @@ enum Type {
 
     return ret;
 }
+
+int System::exec(std::string name) {
+    int len = fs.fileLen(name);
+    if(!~len) return -1;
+    char *data = fs.readFile(name, 0, len);
+    if(!data) return -1;
+    emu::EmuProcess *p = new emu::EmuProcess(data, len);
+    return sched->add(p, name);
+}
+
 
 }

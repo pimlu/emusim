@@ -14,6 +14,10 @@ namespace emu {
 
 EmuProcess::EmuProcess(char *ram, int len) : Process(len), ram((short*) ram) { }
 
+EmuProcess::~EmuProcess() {
+    delete[] ram;
+}
+
 // b => true, if finding value for 'b', otherwise we're finding value for 'a'
 short* EmuProcess::convertToValue(int v, bool b, short* out)
 {
@@ -113,7 +117,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
     Syscall *ret = new Syscall(Type::NONE);
 
     // Perform only C cycles or iterations (as specified by the scheduler)
-    for(int i = 0; i < c; i++)
+    for(; c > 0; c--)
     {
         word = readNextWord();
 
@@ -202,7 +206,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         else skip_instruction = false;
 
         if(DEBUG_PRINT) printRegisters();
-        if(DEBUG_PRINT) printf("Local Cycle: \t %d\n\n", i + 1);
+        if(DEBUG_PRINT) printf("Local Cycle: \t %d\n\n", c);
     }
     END:
     return ret;
