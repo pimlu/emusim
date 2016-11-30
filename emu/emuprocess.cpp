@@ -89,6 +89,7 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
 
 Syscall* EmuProcess::run(int &c, Sysres *res)
 {
+    // Handle result from our last call
     switch(lastCall)
     {
         case Type::NONE: break;
@@ -173,11 +174,11 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                             ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 1);
                             break;
 
-                        case INPUT: break;
-                        case PRINTN: break;
-                        case INPUTN: break;
-                        case READ: break;
-                        case WRITE: break;
+                        case INPUT:     break;
+                        case PRINTN:    break;
+                        case INPUTN:    break;
+                        case READ:      break;
+                        case WRITE:     break;
 
                         case END:   ret = new Syscall(Type::END);   break;
                         default:    ret = new Syscall(Type::NONE);  break;
