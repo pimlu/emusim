@@ -11,12 +11,17 @@ namespace gui {
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    setFixedSize(300,400);
+    setFixedSize(300,455);
 
-    m_button = new QPushButton("Resume Scheduler", this);
-    m_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
-    m_button->show();
-    connect(m_button, SIGNAL (released()), this, SLOT (handleButton()));
+    m_pp_button = new QPushButton("Resume Scheduler", this);
+    m_pp_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
+    m_pp_button->show();
+    connect(m_pp_button, SIGNAL (released()), this, SLOT (handlePPButton()));
+
+    m_step_button = new QPushButton("Step", this);
+    m_step_button->setGeometry(QRect(QPoint(5, 400), QSize(290, 50)));
+    m_step_button->show();
+    connect(m_step_button, SIGNAL (released()), this, SLOT (handleStepButton()));
 
     m_commandOutput = new QTextEdit(this);
     m_commandOutput->setText("Welcome, type HELP for more information.");
@@ -32,9 +37,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(m_submitCommand, SIGNAL (released()), this, SLOT (handleSendCommand()));
 }
 
-void MainWindow::handleButton() {
+void MainWindow::handlePPButton() {
     if(!mainThread) throw std::runtime_error("mainThread is null");
-    m_button->setText(mainThread->toggle() ? "Resume Scheduler" : "Pause Scheduler");
+    bool paused = mainThread->toggle() ;
+    m_pp_button->setText(paused ? "Resume Scheduler" : "Pause Scheduler");
+    m_step_button->setDisabled(!paused);
+}
+void MainWindow::handleStepButton() {
+    if(!mainThread) throw std::runtime_error("mainThread is null");
+    unsigned long long steps = mainThread->step();
+    log(QString::fromStdString("Stepped "+std::to_string(steps)+" cycles."));
 }
 
 void MainWindow::handleSendCommand()
@@ -55,7 +67,7 @@ void MainWindow::handleSendCommand()
         } else {
             std::string file = line[1].toUtf8().constData();
             int pid = mainThread->exec(file);
-            log(QString::fromStdString(pid == -1 ? "File "+file+"not found." : "Running "+
+            log(QString::fromStdString(pid == -1 ? "File "+file+" not found." : "Running "+
                              file+" as PID "+std::to_string(pid)+"."));
         }
     }

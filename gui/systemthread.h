@@ -11,9 +11,7 @@ namespace gui {
 
 class SystemThread {
     std::thread *t;
-    std::mutex pausemtx;
-    std::condition_variable cv;
-    std::mutex schedmtx;
+    std::recursive_mutex schedmtx;
     void tRun();
     bool paused = true;
 public:
@@ -32,6 +30,7 @@ public:
     void remove(int pid);
     sim::Process* find(int pid);
     int exec(std::string name);
+    unsigned long long step();
 };
 
 }

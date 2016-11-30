@@ -9,8 +9,8 @@ Scheduler::Scheduler(System *system, int quantum) :
 
 }
 
-void Scheduler::doSim(int n, bool &paused) {
-    int totalSim = 0;
+unsigned long long Scheduler::doSim(unsigned long long n, bool &paused) {
+    unsigned long long totalSim = 0;
     //system->out << "Running "<< n << " cycles..." << std::endl;
     while(!paused && totalSim < n) {
         while(!jobQueue.empty() && jobQueue.front()->memory <= system->memory - system->usedMem) {
@@ -48,6 +48,7 @@ void Scheduler::doSim(int n, bool &paused) {
         //run the kernel/system for the time we spent
         system->runSyscalls(spent);
         totalSim += spent;
+        cycle += spent;
         //check its results into the waiting queue
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
@@ -60,6 +61,7 @@ void Scheduler::doSim(int n, bool &paused) {
             system->finishQueue.pop_front();
         }
     }
+    return totalSim;
 }
 
 int Scheduler::add(Process *p, std::string name) {

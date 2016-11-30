@@ -5,9 +5,10 @@
 namespace gui {
 
 using std::unique_lock;
-using std::mutex;
+using ulock_recmtx = std::unique_lock<std::recursive_mutex>;
 
 SystemThread::SystemThread(sim::System *system, int hz) : system(system), hz(hz) {
+    schedmtx.lock();
     t = new std::thread(&SystemThread::tRun, this);
 }
 SystemThread::~SystemThread() {
@@ -15,13 +16,11 @@ SystemThread::~SystemThread() {
     delete t;
 }
 void SystemThread::tRun() {
-    unique_lock<mutex> lck(pausemtx);
+    //unique_lock<mutex> lck(pausemtx);
     using namespace std::chrono;
     while(true) {
-        while(paused) cv.wait(lck); //locks until ran
-
-        steady_clock::time_point time = steady_clock::now();
         schedmtx.lock();
+        steady_clock::time_point time = steady_clock::now();
         system->sched->doSim(hz/PERIOD, paused); //does cycles, then sleeps till next period
         schedmtx.unlock();
         std::this_thread::sleep_until(time + std::chrono::milliseconds(1000/PERIOD));
@@ -29,10 +28,11 @@ void SystemThread::tRun() {
 }
 void SystemThread::run() {
     paused = false;
-    cv.notify_all();
+    schedmtx.unlock();
 }
 void SystemThread::pause() {
     paused = true;
+    schedmtx.lock();
 }
 bool SystemThread::toggle() {
     if(isPaused()) run();
@@ -44,18 +44,22 @@ bool SystemThread::isPaused() {
     return paused;
 }
 int SystemThread::add(sim::Process *p, std::string name) {
-    unique_lock<mutex> lck(schedmtx);
+    ulock_recmtx lck(schedmtx);
     return system->sched->add(p, name);
 }
 void SystemThread::remove(int pid) {
-    unique_lock<mutex> lck(schedmtx);
+    ulock_recmtx lck(schedmtx);
     return system->sched->remove(pid);
 }
 int SystemThread::exec(std::string name) {
-    unique_lock<mutex> lck(schedmtx);
+    ulock_recmtx lck(schedmtx);
     return system->exec(name);
 }
-
+unsigned long long SystemThread::step() {
+    ulock_recmtx lck(schedmtx);
+    bool p = false;
+    return system->sched->doSim(1, p);
+}
 
 
 }
