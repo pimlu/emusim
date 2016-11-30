@@ -12,8 +12,8 @@ Syscall* DummyProcess::run(int &c, Sysres *res) {
     c=0;
     static bool foo = true;
     return (foo = !foo) ?
-                new Syscall(Type::NONE) :
-                new SCString(Type::PRINT, "foo\n", 4);
+                (Syscall*) new Syscall(Type::NONE) : //new SCInt(Type::END, 0) :
+                (Syscall*) new SCString(Type::PRINT, "foo\n", 4);
 }
 #pragma GCC diagnostic pop
 

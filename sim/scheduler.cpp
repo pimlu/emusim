@@ -37,8 +37,11 @@ void Scheduler::doSim(int n, bool &paused) {
                 waitQueue.push(ProcRes(proc, new Sysres(Type::NONE)));
             } else {
                 system->blockQueue.push(ProcCall(proc, call));
+                curProc = ProcRes(nullptr, nullptr);
             }
-        } else cyclesLeft = 0;
+
+        }
+        cyclesLeft = 0; //ignores how much they spend for now
         int spent = prevCycles - cyclesLeft;
         system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
