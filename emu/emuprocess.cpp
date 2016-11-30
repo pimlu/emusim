@@ -7,6 +7,8 @@
  * https://raw.githubusercontent.com/gatesphere/demi-16/master/docs/dcpu-specs/dcpu-1-7.txt
 */
 
+#define DEBUG_PRINT false
+
 namespace emu {
 
 using namespace sim;
@@ -30,7 +32,7 @@ short* EmuProcess::convertToValue(int v, bool b, short* out)
     else if(0x08 <= v && v <= 0x0f)
     {
         unsigned short addr = ((short*)&registers)[v - 0x08];
-        return &ram[addr];
+        return &ram[addr / 2];
     }
     // [register + next word]
     else if(0x10 <= v && v <= 0x17)
@@ -95,9 +97,11 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         case Type::NONE:
             //foo
             break;
+
         case Type::READ:
             //bar
             break;
+
         default:
             //error, do an END syscall or something
             ;
@@ -110,11 +114,15 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
     short a_value = 0, b_value = 0;
     short *a_ptr, *b_ptr;
 
+
+    Syscall *ret = new Syscall(Type::NONE);
+
+
     for(int i = 0; i < c; i++)
     {
         word = readNextWord();
 
-        printf("Word: \t\t 0x%hx\n", word);
+        if(DEBUG_PRINT) printf("Word: \t\t 0x%hx\n", word);
 
         opcode = word & WORD_OPCODE_MASK;
         b = (word & WORD_B_MASK) >> (WORD_OPCODE_LENGTH);
@@ -127,14 +135,13 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
             b = 0;
         }
 
-        printf("Opcode: \t 0x%hx \t a: 0x%hx \t b: 0x%hx \n", opcode, a, b);
-
         // Convert a and b to proper value using value table
         a_ptr = convertToValue(a, false, &a_value);
         b_ptr = convertToValue(b, true, &b_value);
 
-        printf("Values: \t\t a: 0x%hx \t b: 0x%hx \t \n", *a_ptr, *b_ptr);
-        printf("-----\n");
+        if(DEBUG_PRINT) printf("Opcode: \t 0x%hx \t a: 0x%hx \t b: 0x%hx \n", opcode, a, b);
+        if(DEBUG_PRINT) printf("Values: \t\t a: 0x%hx \t b: 0x%hx \t \n", *a_ptr, *b_ptr);
+        if(DEBUG_PRINT) printf("-----\n");
 
         if(!skip_instruction)
         {
@@ -142,46 +149,78 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
             switch(opcode)
             {
                 case Opcodes::SET:
-                    printf("Instruction: \t SET\n");
+                    if(DEBUG_PRINT) printf("Instruction: \t SET\n");
                     *b_ptr = *a_ptr;
                     break;
 
                 case Opcodes::ADD:
-                    printf("Instruction: \t ADD\n");
+                    if(DEBUG_PRINT) printf("Instruction: \t ADD\n");
                     *b_ptr += *a_ptr;
                     break;
 
                 case Opcodes::SUB:
-                    printf("Instruction: \t SUB\n");
+                    if(DEBUG_PRINT) printf("Instruction: \t SUB\n");
                     *b_ptr -= *a_ptr;
                     break;
 
                 case Opcodes::IFE:
-                    printf("Instruction: \t IFE\n");
+                    if(DEBUG_PRINT) printf("Instruction: \t IFE\n");
                     if(*a_ptr != *b_ptr) skip_instruction = true;
                     break;
 
                 case SpecialOpcodes::INT:
-                    printf("Instruction: \t INT\n");
-                    lastCall = static_cast<Type>(a);
+                {
+                    if(DEBUG_PRINT) printf("Instruction: \t INT\n");
+
+                    Type type = static_cast<Type>(*a_ptr);
+
+                    switch(type)
+                    {
+                        case END:
+                            ret = new Syscall(Type::END);
+                            break;
+
+                        case PRINT:
+                            // TODO: fix convertToValue so that address resolves arent word aligned, then we can
+                            // remove this ugly ((L * 2) - 3) code...
+                            ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 3);
+                            break;
+
+                        case INPUT:
+                            break;
+
+                        case PRINTN:
+                            break;
+
+                        case INPUTN:
+                            break;
+
+                        case READ:
+                            break;
+
+                        case WRITE:
+                            break;
+
+                        default:
+                            ret = new Syscall(Type::NONE);
+                            break;
+                    }
                     goto END;
+                }
 
                 default:
-                    printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
+                    if(DEBUG_PRINT) printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
                     break;
             }
         }
         else skip_instruction = false;
 
-        printRegisters();
-        printf("Local Cycle: \t %d\n\n", i + 1);
+        if(DEBUG_PRINT) printRegisters();
+        if(DEBUG_PRINT) printf("Local Cycle: \t %d\n\n", i + 1);
     }
-
     END:
-
-    //then finish with a syscall
-    Syscall *ret = new Syscall(lastCall);
-
+    // Why do we have to set c equal to 0? Scheduler should be handling this...
+    c = 0;
     return ret;
 }
 
