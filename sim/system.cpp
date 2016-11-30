@@ -10,6 +10,7 @@ System::~System() {
     delete sched;
 }
 
+const int IOCOST = 30;
 bool System::run(int c) {
     /*
 enum Type {
@@ -46,17 +47,16 @@ enum Type {
                 }break;
             case Type::PRINT:
                 {SCString *scs = (SCString*) sc;
-                if(cycles<scs->len) return ret;
-                cycles -= scs->len;
+                if(cycles<IOCOST) return ret;
+                cycles -= IOCOST;
 
                 out.write(scs->str, scs->len);
                 res.second = new SRInt(Type::IORES, true);
 
                 }break;
             case Type::INPUT:
-                {
-                if(cycles<20) return ret;
-                cycles -= 20;
+                {if(cycles<IOCOST) return ret;
+                cycles -= IOCOST;
 
                 char *buffer = new char[256];
                 in.getline(buffer, 256);
@@ -64,8 +64,27 @@ enum Type {
                 res.second = new SRString(Type::IORES, buffer, in.gcount());
 
                 }break;
-        }
+            case Type::PRINTN:
+                {SCInt *sci = (SCInt*) sc;
+                if(cycles<IOCOST) return ret;
+                cycles -= IOCOST;
 
+                out << sci->val << std::endl;
+
+                res.second = new SRInt(Type::IORES, 1);
+
+                }break;
+            case TYPE::INPUTN:
+                {if(cycles<IOCOST) return ret;
+                cycles -= IOCOST;
+
+                int n;
+                in >> n;
+
+                res.second = new SRInt(Type::IORes, n);
+
+                }break;
+        }
         ret = true;
         blockQueue.pop();
         delete sc;
