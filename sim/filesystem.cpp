@@ -20,7 +20,7 @@ namespace sim {
     }
 
     bool FileSystem::writeFile(string name, int seek, int len, char *data){
-      std::ofstream outfile((path + "/" + name).c_str(), std::ofstream::binary);
+      std::ofstream outfile((path + "/" + name).c_str(), std::ofstream::binary | std::ios::in | std::ios::out);
       outfile.seekp(seek);
       outfile.write(data,len);
       return !outfile.bad();

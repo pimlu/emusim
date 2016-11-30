@@ -28,21 +28,21 @@ int main(int argc, char *argv[])
     // Temporary until we have File IO added
     // Fibonaci Calcutator, calculates n = 20 and stores it in register A
     // https://gist.github.com/ehaliewicz/2523345
-   /*unsigned char memory[] = { 0x01, 0x84, 0x21, 0x88, 0x41, 0xd4, 0x52, 0x84,
+   unsigned char memory[] = { 0x01, 0x84, 0x21, 0x88, 0x41, 0xd4, 0x52, 0x84,
                               0x81, 0x7f, 0x0d, 0x00, 0x61, 0x00, 0x62, 0x04,
                               0x01, 0x04, 0x21, 0x0c, 0x43, 0x88, 0x81, 0x7f,
                               0x03, 0x00, 0x00, 0x7d, 0x01, 0x00 };
    int cycles = 500;
 
    emu::EmuProcess emu((char*) memory, sizeof(memory));
-   emu.run(cycles, new sim::Sysres(sim::Type::NONE));*/
+   emu.run(cycles, new sim::Sysres(sim::Type::NONE));
    // ---
 
-    sim::FileSystem fs("foo");
+    /*sim::FileSystem fs("foo");
     fs.writeFile("bar.txt", 3, 4, (char*) "1234");
     //std::cout.write(str, 4);
     //delete[] str;
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
     int ret = a.exec();
     delete mainThread;
