@@ -220,8 +220,6 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         if(DEBUG_PRINT) printf("Local Cycle: \t %d\n\n", i + 1);
     }
     END:
-    // Why do we have to set c equal to 0? Scheduler should be handling this...
-    c = 0;
     return ret;
 }
 
