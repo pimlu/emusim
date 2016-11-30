@@ -1,6 +1,7 @@
 #include "scheduler.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace sim {
 
@@ -9,8 +10,8 @@ Scheduler::Scheduler(System *system, int quantum) :
 
 }
 
-unsigned long long Scheduler::doSim(unsigned long long n, bool &paused) {
-    unsigned long long totalSim = 0;
+int Scheduler::doSim(int n, bool &paused) {
+    int totalSim = 0;
     //system->out << "Running "<< n << " cycles..." << std::endl;
     while(!paused && totalSim < n) {
         while(!jobQueue.empty() && jobQueue.front()->memory <= system->memory - system->usedMem) {
@@ -27,23 +28,25 @@ unsigned long long Scheduler::doSim(unsigned long long n, bool &paused) {
                 waitQueue.pop_front();
             }
         }
-        int prevCycles = cyclesLeft;
+        int prevCycles = std::min(cyclesLeft, n-totalSim),
+                runCycles = prevCycles;
         //spend time running a process if we have one
         Process *proc = curProc.first;
         if(proc) {
-            Syscall *call = proc->run(cyclesLeft, curProc.second);
+            Syscall *call = proc->run(runCycles, curProc.second);
             delete curProc.second;
             if(call->type == NONE) {
                 waitQueue.push_back(ProcRes(proc, new Sysres(Type::NONE)));
             } else {
                 system->blockQueue.push_back(ProcCall(proc, call));
-                curProc = ProcRes(nullptr, nullptr);
             }
+            curProc = ProcRes(nullptr, nullptr);
 
-        } else cyclesLeft = 0;
-        int spent = prevCycles - cyclesLeft;
+        } else cyclesLeft = runCycles = 0;
+        int spent = prevCycles - runCycles;
+        cyclesLeft -= spent;
         pcbs[proc].cycles += spent;
-        cyclesLeft = 0; //ignores how much they spend for now
+        //cyclesLeft = 0; //ignores how much they spend for now
         if(spent==0) system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
         system->runSyscalls(spent);

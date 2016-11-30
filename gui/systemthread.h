@@ -14,6 +14,7 @@ class SystemThread {
     std::recursive_mutex schedmtx;
     void tRun();
     bool paused = true;
+    bool tLoop = true;
 public:
     const int PERIOD = 10;
     SystemThread(sim::System *system, int hz);
@@ -30,7 +31,7 @@ public:
     void remove(int pid);
     sim::Process* find(int pid);
     int exec(std::string name);
-    unsigned long long step();
+    int step(int n = 1);
 };
 
 }

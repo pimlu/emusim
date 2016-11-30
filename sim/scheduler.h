@@ -31,7 +31,7 @@ public:
     int memory, used = 0, quantum, curpid = 1;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
-    unsigned long long doSim(unsigned long long n, bool &paused);
+    int doSim(int n, bool &paused);
     int add(sim::Process *p, std::string name);
     void remove(sim::Process *p);
     void remove(int pid);

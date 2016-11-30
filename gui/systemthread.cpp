@@ -6,32 +6,37 @@ namespace gui {
 
 using std::unique_lock;
 using ulock_recmtx = std::unique_lock<std::recursive_mutex>;
-
 SystemThread::SystemThread(sim::System *system, int hz) : system(system), hz(hz) {
     schedmtx.lock();
     t = new std::thread(&SystemThread::tRun, this);
 }
 SystemThread::~SystemThread() {
-    t->detach();
+    tLoop = false;
+    if(paused) {
+        schedmtx.unlock();
+    }
+    t->join();
     delete t;
 }
 void SystemThread::tRun() {
     //unique_lock<mutex> lck(pausemtx);
     using namespace std::chrono;
-    while(true) {
+    while(tLoop) {
         schedmtx.lock();
         steady_clock::time_point time = steady_clock::now();
         system->sched->doSim(hz/PERIOD, paused); //does cycles, then sleeps till next period
         schedmtx.unlock();
-        std::this_thread::sleep_until(time + std::chrono::milliseconds(1000/PERIOD));
+        if(tLoop) std::this_thread::sleep_until(time + std::chrono::milliseconds(1000/PERIOD));
     }
 }
 void SystemThread::run() {
     paused = false;
+
     schedmtx.unlock();
 }
 void SystemThread::pause() {
     paused = true;
+
     schedmtx.lock();
 }
 bool SystemThread::toggle() {
@@ -55,10 +60,10 @@ int SystemThread::exec(std::string name) {
     ulock_recmtx lck(schedmtx);
     return system->exec(name);
 }
-unsigned long long SystemThread::step() {
+int SystemThread::step(int n) {
     ulock_recmtx lck(schedmtx);
     bool p = false;
-    return system->sched->doSim(1, p);
+    return system->sched->doSim(n, p);
 }
 
 

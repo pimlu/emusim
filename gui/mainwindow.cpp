@@ -45,7 +45,7 @@ void MainWindow::handlePPButton() {
 }
 void MainWindow::handleStepButton() {
     if(!mainThread) throw std::runtime_error("mainThread is null");
-    unsigned long long steps = mainThread->step();
+    unsigned long long steps = mainThread->step(10);
     log(QString::fromStdString("Stepped "+std::to_string(steps)+" cycles."));
 }
 
