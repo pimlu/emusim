@@ -25,5 +25,6 @@ INT 4            ; printn syscall
 SET [0x1000], 10 ; new line (in dec)
 SET A, 0x1000    ; address of string
 SET B, 1         ; length
+INT 2            ; print syscall
 
-INT 1
+INT 1            ; terminate/EOP syscall
