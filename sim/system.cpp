@@ -53,6 +53,17 @@ enum Type {
                 res.second = new SRInt(Type::IORES, true);
 
                 }break;
+            case Type::INPUT:
+                {
+                if(cycles<20) return ret;
+                cycles -= 20;
+
+                char *buffer = new char[256];
+                in.getline(buffer, 256);
+
+                res.second = new SRString(Type::IORES, buffer, in.gcount());
+
+                }break;
         }
 
         ret = true;
