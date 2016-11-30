@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 
+#include "sim/syscalls.h"
+#include "emu/emuprocess.h"
+#include "sim/process.h"
+
 #include <stdexcept>
 
 namespace gui {
@@ -8,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     setFixedSize(300,400);
 
-    m_button = new QPushButton("Run", this);
+    m_button = new QPushButton("Resume Scheduler", this);
     m_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
     m_button->show();
     connect(m_button, SIGNAL (released()), this, SLOT (handleButton()));
@@ -29,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 void MainWindow::handleButton() {
     if(!mainThread) throw std::runtime_error("mainThread is null");
-    m_button->setText(mainThread->toggle() ? "Run" : "Pause");
+    m_button->setText(mainThread->toggle() ? "Resume Scheduler" : "Pause Scheduler");
 }
 
 void MainWindow::handleSendCommand()
@@ -42,11 +46,41 @@ void MainWindow::handleSendCommand()
 
     if(command == "exec")
     {
-        log("I still need to do this...");
+        log("Currently unimplemented, use EMU_TEST in the meantime.");
+    }
+    else if(command == "emu_test")
+    {
+        char *memory = new char[0x10000];
+
+        // Hello World, prints "Hello, world!" to the screen
+        unsigned char program[] =
+        {
+            0xc1, 0x7f, 0x48, 0x00, 0x00, 0x10, 0xc1, 0x7f,
+            0x65, 0x00, 0x01, 0x10, 0xc1, 0x7f, 0x6c, 0x00,
+            0x02, 0x10, 0xc1, 0x7f, 0x6c, 0x00, 0x03, 0x10,
+            0xc1, 0x7f, 0x6f, 0x00, 0x04, 0x10, 0xc1, 0x7f,
+            0x2c, 0x00, 0x05, 0x10, 0xc1, 0x7f, 0x20, 0x00,
+            0x06, 0x10, 0xc1, 0x7f, 0x77, 0x00, 0x07, 0x10,
+            0xc1, 0x7f, 0x6f, 0x00, 0x08, 0x10, 0xc1, 0x7f,
+            0x72, 0x00, 0x09, 0x10, 0xc1, 0x7f, 0x6c, 0x00,
+            0x0a, 0x10, 0xc1, 0x7f, 0x64, 0x00, 0x0b, 0x10,
+            0xc1, 0x7f, 0x21, 0x00, 0x0c, 0x10, 0xc1, 0xaf,
+            0x0d, 0x10, 0x01, 0x7c, 0x00, 0x10, 0x21, 0xbc,
+            0x00, 0x7d, 0x02, 0x00, 0x81, 0x7f, 0x2e, 0x00
+        };
+
+        // Copy program into processes memory
+        memcpy(memory, program, sizeof(program));
+
+        // Create process and schedule it
+        emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, sizeof(memory));
+        mainThread->system->sched->add(emu);
+
+        log("Scheduled emu test program");
     }
     else if(command == "help")
     {
-        log("I still need to do this...");
+        log("Current list of commands: EXEC, EMU_TEST");
     }
     else
     {
