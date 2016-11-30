@@ -41,8 +41,7 @@ enum Type {
                 cycles -= 5;
 
                 usedMem -= res.first->memory;
-                res.first = nullptr;
-                //TODO: do something with return code
+                res.second = new SRInt(Type::END, sci->val);
 
                 }break;
             case Type::PRINT:
@@ -69,7 +68,7 @@ enum Type {
                 if(cycles<IOCOST) return ret;
                 cycles -= IOCOST;
 
-                out << sci->val << std::endl;
+                out << sci->val;
 
                 res.second = new SRInt(Type::IORES, 1);
 
@@ -86,9 +85,9 @@ enum Type {
                 }break;
         }
         ret = true;
-        blockQueue.pop();
+        blockQueue.pop_front();
         delete sc;
-        if(res.first) finishQueue.push(res);
+        if(res.first) finishQueue.push_back(res);
     }
 
     return ret;
