@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QPushButton>
+#include <QTextEdit>
+#include <QLineEdit>
 
 #include "systemthread.h"
 
@@ -16,8 +18,15 @@ public:
     SystemThread *mainThread = nullptr;
 private slots:
     void handleButton();
+    void handleSendCommand();
 private:
+    void log(QString s) { m_commandOutput->append(s); }
+
     QPushButton *m_button;
+    QPushButton *m_submitCommand;
+    QTextEdit *m_commandOutput;
+    QLineEdit *m_commandInput;
+
     bool state = true;
 signals:
 
