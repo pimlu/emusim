@@ -1,0 +1,20 @@
+; Credit to https://gist.github.com/ehaliewicz/2523345
+
+SET A, 0
+SET B, 1
+SET C, 10   ;; set to 10 to find the tenth fibonacci number
+
+:test
+IFE C, 0
+SET PC, done
+	
+;; loop 
+SET X, A
+ADD X, B
+SET A, B
+SET B, X
+SUB C, 1
+SET PC, test
+
+:done   
+;; answer is in register A
