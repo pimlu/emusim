@@ -74,14 +74,14 @@ enum Type {
                 res.second = new SRInt(Type::IORES, 1);
 
                 }break;
-            case TYPE::INPUTN:
+            case Type::INPUTN:
                 {if(cycles<IOCOST) return ret;
                 cycles -= IOCOST;
 
                 int n;
                 in >> n;
 
-                res.second = new SRInt(Type::IORes, n);
+                res.second = new SRInt(Type::IORES, n);
 
                 }break;
         }
