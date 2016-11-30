@@ -1,0 +1,22 @@
+SET [0x1000], 72
+SET [0x1001], 101
+SET [0x1002], 108
+SET [0x1003], 108
+SET [0x1004], 111
+SET [0x1005], 44
+SET [0x1006], 32
+SET [0x1007], 119
+SET [0x1008], 111
+SET [0x1009], 114
+SET [0x100a], 108
+SET [0x100b], 100
+SET [0x100c], 33
+SET [0x100d], 10
+
+; Print string
+SET A, 0x1000
+SET B, 14
+INT 2
+
+; Terminate
+INT 1
