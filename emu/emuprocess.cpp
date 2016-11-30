@@ -148,30 +148,31 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
             // Handle the opcode
             switch(opcode)
             {
-                case Opcodes::SET:
-                    if(DEBUG_PRINT) printf("Instruction: \t SET\n");
-                    *b_ptr = *a_ptr;
-                    break;
+                case Opcodes::SET: *b_ptr = *a_ptr;     break;
+                case Opcodes::ADD: *b_ptr += *a_ptr;    break;
+                case Opcodes::SUB: *b_ptr -= *a_ptr;    break;
 
-                case Opcodes::ADD:
-                    if(DEBUG_PRINT) printf("Instruction: \t ADD\n");
-                    *b_ptr += *a_ptr;
-                    break;
+                case Opcodes::MUL: *b_ptr *= *a_ptr;    break;
+                case Opcodes::DIV: *b_ptr /= *a_ptr;    break;
 
-                case Opcodes::SUB:
-                    if(DEBUG_PRINT) printf("Instruction: \t SUB\n");
-                    *b_ptr -= *a_ptr;
-                    break;
+                case Opcodes::AND: *b_ptr &= *a_ptr;    break;
+                case Opcodes::BOR: *b_ptr |= *a_ptr;    break;
+                case Opcodes::XOR: *b_ptr ^= *a_ptr;    break;
 
-                case Opcodes::IFE:
-                    if(DEBUG_PRINT) printf("Instruction: \t IFE\n");
-                    if(*a_ptr != *b_ptr) skip_instruction = true;
-                    break;
+                case Opcodes::ASR: *b_ptr = *b_ptr >> *a_ptr;   break;
+                case Opcodes::SHL: *b_ptr = *b_ptr << *a_ptr;   break;
+
+                case Opcodes::IFB: if(*a_ptr & *b_ptr == 0) skip_instruction = true; break;
+                case Opcodes::IFC: if(*a_ptr & *b_ptr != 0) skip_instruction = true; break;
+
+                case Opcodes::IFE: if(*a_ptr != *b_ptr) skip_instruction = true; break;
+                case Opcodes::IFN: if(*a_ptr == *b_ptr) skip_instruction = true; break;
+
+                case Opcodes::IFG: if(*a_ptr < *b_ptr) skip_instruction = true; break;
+                case Opcodes::IFL: if(*a_ptr > *b_ptr) skip_instruction = true; break;
 
                 case SpecialOpcodes::INT:
                 {
-                    if(DEBUG_PRINT) printf("Instruction: \t INT\n");
-
                     Type type = static_cast<Type>(*a_ptr);
 
                     switch(type)
@@ -209,7 +210,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                 }
 
                 default:
-                    if(DEBUG_PRINT) printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
+                    printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
                     break;
             }
         }
