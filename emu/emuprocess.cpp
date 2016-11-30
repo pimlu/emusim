@@ -92,11 +92,15 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
     // Handle result from our last call
     switch(lastCall)
     {
-        case Type::NONE: break;
-        case Type::READ: break;
+        case NONE: break;
 
-        // Likely some kind of error, we will go ahead an terminate
-        // the process
+        case READ:      break;
+        case WRITE:     break;
+
+        case INPUT:     break;
+        case INPUTN:    break;
+
+        // Likely some kind of error, we will go ahead an terminate the process
         default: return new Syscall(Type::END);
     }
 
@@ -150,8 +154,8 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                 case Opcodes::BOR: *b_ptr |= *a_ptr;    break;
                 case Opcodes::XOR: *b_ptr ^= *a_ptr;    break;
 
-                case Opcodes::ASR: *b_ptr = *b_ptr >> *a_ptr;   break;
-                case Opcodes::SHL: *b_ptr = *b_ptr << *a_ptr;   break;
+                case Opcodes::ASR: *b_ptr >>= *a_ptr;   break;
+                case Opcodes::SHL: *b_ptr <<= *a_ptr;   break;
 
                 case Opcodes::IFB: if(*a_ptr & *b_ptr == 0) skip_instruction = true; break;
                 case Opcodes::IFC: if(*a_ptr & *b_ptr != 0) skip_instruction = true; break;
@@ -174,14 +178,18 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                             ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 1);
                             break;
 
-                        case INPUT:     break;
-                        case PRINTN:    break;
-                        case INPUTN:    break;
+                        case PRINTN:
+                            ret = new SCInt(Type::PRINTN, registers.A);
+                            break;
+
                         case READ:      break;
                         case WRITE:     break;
 
-                        case END:   ret = new Syscall(Type::END);   break;
-                        default:    ret = new Syscall(Type::NONE);  break;
+                        case INPUT:     ret = new Syscall(Type::INPUT);     break;
+                        case INPUTN:    ret = new Syscall(Type::INPUTN);    break;
+                        case END:       ret = new Syscall(Type::END);       break;
+
+                        default:        ret = new Syscall(Type::NONE);      break;
                     }
                     goto END;
                 }
