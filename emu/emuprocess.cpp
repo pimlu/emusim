@@ -182,9 +182,9 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                             break;
 
                         case PRINT:
-                            // TODO: fix convertToValue so that address resolves arent word aligned, then we can
-                            // remove this ugly ((L * 2) - 3) code...
-                            ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 3);
+                            // DCPU-16 is word aligned so we will just treat string as seperated by spacess...
+                            // Its ultimately okay because it looks ~cool~ and ~retro~ that way.
+                            ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 1);
                             break;
 
                         case INPUT:
