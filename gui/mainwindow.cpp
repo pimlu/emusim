@@ -41,27 +41,32 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     term_tab->show();
 
+
     m_pp_button = new QPushButton("Resume Scheduler", term_tab);
-    m_pp_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
+    m_pp_button->setGeometry(QRect(QPoint(5, 445), QSize(775, 50)));
     m_pp_button->show();
     connect(m_pp_button, SIGNAL (released()), this, SLOT (handlePPButton()));
 
+
     m_step_button = new QPushButton("Step", term_tab);
-    m_step_button->setGeometry(QRect(QPoint(5, 400), QSize(290, 50)));
+    m_step_button->setGeometry(QRect(QPoint(5, 500), QSize(775, 50)));
     m_step_button->show();
     connect(m_step_button, SIGNAL (released()), this, SLOT (handleStepButton()));
 
+
     m_commandOutput = new QTextEdit(term_tab);
     m_commandOutput->setText("Welcome, type HELP for more information.");
-    m_commandOutput->setGeometry(QRect(QPoint(5, 5), QSize(290, 310)));
+    m_commandOutput->setGeometry(QRect(QPoint(5, 5), QSize(775, 410)));
     m_commandOutput->setReadOnly(true);
 
+
     m_commandInput = new QLineEdit(term_tab);
-    m_commandInput->setGeometry(QRect(QPoint(5, 320), QSize(240, 20)));
+    m_commandInput->setGeometry(QRect(QPoint(5, 420), QSize(725, 20)));
     connect(m_commandInput, SIGNAL (returnPressed()), this, SLOT (handleSendCommand()));
 
+
     m_submitCommand = new QPushButton(">", term_tab);
-    m_submitCommand->setGeometry(QRect(QPoint(250, 318), QSize(45, 23)));
+    m_submitCommand->setGeometry(QRect(QPoint(735, 418), QSize(45, 23)));
     connect(m_submitCommand, SIGNAL (released()), this, SLOT (handleSendCommand()));
 
 
@@ -81,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QTimer *mem_timer = new QTimer(this);
     connect(mem_timer, SIGNAL(timeout()), this, SLOT(updateMemoryChart()));
     mem_timer->start(1000);
+
 
     // place holder chart for cpu
     QLineSeries *cpu_usage = new QLineSeries();
@@ -107,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     tModel = new QStandardItemModel();
     tModel->setHorizontalHeaderLabels(QStringList {"PID","status","name","memory","IO"});
     table->setModel(tModel);
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     fillTop->addWidget(table, 1);
     tabs->show();
 
