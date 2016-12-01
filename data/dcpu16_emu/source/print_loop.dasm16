@@ -1,0 +1,15 @@
+:print           ; answer is in register A
+
+                 ; print result
+INT 4            ; printn syscall
+
+                 ; print new line
+SET [0x1000], 10 ; new line (in dec)
+SET A, 0x1000    ; address of string
+SET B, 1         ; length
+INT 2            ; print syscall
+
+SET PC, print
+
+; Terminate
+INT 1

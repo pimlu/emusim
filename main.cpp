@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     // Create process and schedule it
     emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, 0x2000);
-    mainThread->add(emu, "emu");
+    //mainThread->add(emu, "emu");
     // ---
 
     /*sim::FileSystem fs("foo");

@@ -1,0 +1,10 @@
+:loop
+SET A, 5
+SET B, 5
+ADD C, A
+MUL C, B
+
+SET PC, loop
+
+; Terminate
+INT 1
