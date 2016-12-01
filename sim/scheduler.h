@@ -11,7 +11,7 @@ namespace sim { class Scheduler; }
 namespace sim {
 
 struct PCB {
-    unsigned long long cycles, ioreqs, ibytes, obytes;
+    unsigned long long cycles, sample, ioreqs, ibytes, obytes;
     std::string name;
     int pid;
 };

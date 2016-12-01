@@ -17,7 +17,7 @@ public:
     char* readFile(std::string name, int seek, int len);
     //writes to [seek, seek+len) with the characters from *data
     //if the file does not exist, creates it.  returns whether file was created
-    bool writeFile(std::string name, int seek, int len, char *data);
+    bool writeFile(std::string name, int seek, int len, const char *data);
     //deletes a file.  if the file does not exist, does nothing.
     //returns whether file was deleted
     bool deleteFile(std::string name);

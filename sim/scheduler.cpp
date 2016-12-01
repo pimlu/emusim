@@ -46,6 +46,7 @@ int Scheduler::doSim(int n, bool &paused) {
         int spent = prevCycles - runCycles;
         cyclesLeft -= spent;
         pcbs[proc].cycles += spent;
+        pcbs[proc].sample += spent;
         //cyclesLeft = 0; //ignores how much they spend for now
         if(spent==0) system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
@@ -56,6 +57,7 @@ int Scheduler::doSim(int n, bool &paused) {
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
             if(res.second->type == Type::END) {
+                system->out << "exited. " << pcbs[res.first].cycles << std::endl;
                 pcbs.erase(res.first);
                 delete res.first;
                 memory -= res.first->memory;
@@ -69,7 +71,7 @@ int Scheduler::doSim(int n, bool &paused) {
 
 int Scheduler::add(Process *p, std::string name) {
     jobQueue.push_back(p);
-    pcbs[p] = PCB();
+    pcbs[p] = PCB {};
     pcbs[p].name = name;
     return pcbs[p].pid = curpid++;
 }
