@@ -11,30 +11,41 @@ namespace gui {
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    setFixedSize(300,455);
+    setFixedSize(315,495);
 
-    m_pp_button = new QPushButton("Resume Scheduler", this);
+
+    tabs = new QTabWidget(this);
+    tabs->setGeometry(QRect(QPoint(5, 5), QSize(305, 480)));
+    tabs->addTab(term_tab = new QWidget, tr("Terminal"));
+    tabs->addTab(top_tab = new QWidget, tr("System"));
+    tabs->addTab(proc_tab = new QWidget, tr("Process"));
+
+    term_tab->show(); top_tab->show(); proc_tab->show();
+
+    m_pp_button = new QPushButton("Resume Scheduler", term_tab);
     m_pp_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
     m_pp_button->show();
     connect(m_pp_button, SIGNAL (released()), this, SLOT (handlePPButton()));
 
-    m_step_button = new QPushButton("Step", this);
+    m_step_button = new QPushButton("Step", term_tab);
     m_step_button->setGeometry(QRect(QPoint(5, 400), QSize(290, 50)));
     m_step_button->show();
     connect(m_step_button, SIGNAL (released()), this, SLOT (handleStepButton()));
 
-    m_commandOutput = new QTextEdit(this);
+    m_commandOutput = new QTextEdit(term_tab);
     m_commandOutput->setText("Welcome, type HELP for more information.");
     m_commandOutput->setGeometry(QRect(QPoint(5, 5), QSize(290, 310)));
     m_commandOutput->setReadOnly(true);
 
-    m_commandInput = new QLineEdit(this);
+    m_commandInput = new QLineEdit(term_tab);
     m_commandInput->setGeometry(QRect(QPoint(5, 320), QSize(240, 20)));
     connect(m_commandInput, SIGNAL (returnPressed()), this, SLOT (handleSendCommand()));
 
-    m_submitCommand = new QPushButton(">", this);
+    m_submitCommand = new QPushButton(">", term_tab);
     m_submitCommand->setGeometry(QRect(QPoint(250, 318), QSize(45, 23)));
     connect(m_submitCommand, SIGNAL (released()), this, SLOT (handleSendCommand()));
+
+    tabs->show();
 }
 
 void MainWindow::handlePPButton() {
