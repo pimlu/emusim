@@ -7,13 +7,12 @@
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QTabWidget>
+#include <QTimer>
 #include <QtCharts>
 
 #include "systemthread.h"
 
 namespace gui {
-
-using namespace QtCharts;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -24,6 +23,7 @@ private slots:
     void handlePPButton();
     void handleStepButton();
     void handleSendCommand();
+    void updateProcesses();
 private:
     void log(QString s) { m_commandOutput->append(s); }
 
@@ -36,7 +36,8 @@ private:
     QTextEdit *m_commandOutput;
     QLineEdit *m_commandInput;
 
-    QChart *m_cpuUsage, *m_memUsage;
+    QtCharts::QChart *m_cpuUsage, *m_memUsage;
+    QTimer *timer;
 
     bool state = true;
 signals:

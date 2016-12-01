@@ -4,7 +4,6 @@
 #include "emu/emuprocess.h"
 #include "sim/process.h"
 
-#include <QtCharts>
 
 #include <stdexcept>
 #include <string>
@@ -56,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     mem_usage->append(2, 10);
     mem_usage->append(3, 20);
     mem_usage->append(4, 10);
+
 
     m_memUsage = new QChart();
     m_memUsage->legend()->hide();
@@ -170,6 +170,10 @@ void MainWindow::handleSendCommand()
     {
         log("Unrecognized command: " + command);
     }
+
+}
+
+void MainWindow::updateProcesses() {
 
 }
 
