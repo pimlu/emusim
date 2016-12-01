@@ -63,7 +63,7 @@ int Scheduler::doSim(int n, bool &paused) {
                             << " cycles." <<std::endl;
                 pcbs.erase(res.first);
                 delete res.first;
-                memory -= res.first->memory;
+                system->usedMem -= res.first->memory;
                 //TODO react to return code
             } else waitQueue.push_back(res);
             system->finishQueue.pop_front();

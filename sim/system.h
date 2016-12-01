@@ -19,6 +19,7 @@ public:
     ~System();
     bool runSyscalls(int c); //passes time for the system, returns true if an entry finished
     int exec(std::string name);
+    void reset();
     FileSystem fs;
     int memory, usedMem=0;
     std::istream &in;

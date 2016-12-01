@@ -61,6 +61,10 @@ int SystemThread::step(int n) {
     bool p = false;
     return system->sched->doSim(n, p);
 }
+void SystemThread::reset() {
+    ulock_recmtx lck(schedmtx);
+    system->reset();
+}
 
 std::vector<ProcData> SystemThread::getProcs() {
     ulock_recmtx lck(schedmtx);

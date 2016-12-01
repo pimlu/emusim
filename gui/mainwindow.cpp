@@ -222,8 +222,8 @@ void MainWindow::handleSendCommand()
     }
     else if(command == "reset")
     {
-        // @TODO!!!
-        log("TODO TODO TODO TODO TODO TODO");
+        mainThread->reset();
+        log("Simulator reset.");
     }
     else if(command == "exit")
     {

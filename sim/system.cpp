@@ -126,5 +126,17 @@ int System::exec(std::string name) {
     return sched->add(p, name);
 }
 
+void System::reset() {
+    blockQueue.clear();
+    finishQueue.clear();
+    usedMem = 0;
+    sched->jobQueue.clear();
+    sched->waitQueue.clear();
+    sched->curProc = {nullptr, nullptr};
+    sched->cycle = sched->cyclesLeft = 0;
+    sched->curpid = 1;
+    sched->pcbs.clear();
+}
+
 
 }

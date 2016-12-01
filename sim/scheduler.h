@@ -30,7 +30,7 @@ public:
     ProcRes curProc; //current active process
     int cyclesLeft = 0; //cycles left before it context switches
 
-    int memory, used = 0, quantum, curpid = 1;
+    int quantum, curpid = 1;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
     int doSim(int n, bool &paused);

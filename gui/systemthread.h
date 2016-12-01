@@ -44,6 +44,7 @@ public:
     sim::Process* find(int pid);
     int exec(std::string name);
     int step(int n = 1);
+    void reset();
     std::vector<ProcData> getProcs();
     ulock_recmtx getLock();
 };
