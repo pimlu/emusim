@@ -68,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // placeholder chart for memory
     QLineSeries *mem_usage = new QLineSeries();
 
-
     m_memUsage = new QChart();
     m_memUsage->legend()->hide();
     m_memUsage->addSeries(mem_usage);
@@ -85,10 +84,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // place holder chart for cpu
     QLineSeries *cpu_usage = new QLineSeries();
-    cpu_usage->append(1, 10);
-    cpu_usage->append(2, 10);
-    cpu_usage->append(3, 20);
-    cpu_usage->append(4, 10);
 
     m_cpuUsage = new QChart();
     m_cpuUsage->legend()->hide();
