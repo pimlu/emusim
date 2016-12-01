@@ -80,15 +80,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_memUsage->setTitle("Memory Usage");
 
     QChartView *mem_chartView = new QChartView(m_memUsage, sys_tab);
-    mem_chartView->setGeometry(QRect(QPoint(0, 0), QSize(300, 225)));
+    mem_chartView->setGeometry(QRect(QPoint(0, 0), QSize(263, 225)));
     mem_chartView->setRenderHint(QPainter::Antialiasing);
+    mem_chartView->setAutoFillBackground(true);
 
     QTimer *mem_timer = new QTimer(this);
     connect(mem_timer, SIGNAL(timeout()), this, SLOT(updateMemoryChart()));
     mem_timer->start(1000);
 
 
-    // place holder chart for cpu
+    // place holder chart for CPU usage
     QLineSeries *cpu_usage = new QLineSeries();
 
     m_cpuUsage = new QChart();
@@ -98,12 +99,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_cpuUsage->setTitle("CPU Usage");
 
     QChartView *cpu_chartView = new QChartView(m_cpuUsage, sys_tab);
-    cpu_chartView->setGeometry(QRect(QPoint(0, 215), QSize(300, 240)));
+    cpu_chartView->setGeometry(QRect(QPoint(263, 0), QSize(263, 225)));
     cpu_chartView->setRenderHint(QPainter::Antialiasing);
 
     QTimer *cpu_timer = new QTimer(this);
     connect(cpu_timer, SIGNAL(timeout()), this, SLOT(updateCPUChart()));
     cpu_timer->start(1000);
+
+
+    // place holder chart for IO requests
+    QLineSeries *io_usage = new QLineSeries();
+
+    m_ioUsage = new QChart();
+    m_ioUsage->legend()->hide();
+    m_ioUsage->addSeries(io_usage);
+    m_ioUsage->createDefaultAxes();
+    m_ioUsage->setTitle("IO Requests");
+
+    QChartView *io_chartView = new QChartView(m_ioUsage, sys_tab);
+    io_chartView->setGeometry(QRect(QPoint(526, 0), QSize(263, 225)));
+    io_chartView->setRenderHint(QPainter::Antialiasing);
+
+    QTimer *io_timer = new QTimer(this);
+    connect(io_timer, SIGNAL(timeout()), this, SLOT(updateIOChart()));
+    io_timer->start(1000);
 
     // ----
 
@@ -116,6 +135,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     fillTop->addWidget(table, 1);
     tabs->show();
+
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateProcesses()));
@@ -292,6 +312,46 @@ void MainWindow::updateCPUChart()
     m_cpuUsage->axisY()->setRange(0, 100);
 
     dynamic_cast<QValueAxis*>(m_cpuUsage->axisX())->setVisible(false);
+}
+
+void MainWindow::updateIOChart()
+{
+    QLineSeries *io_usage = dynamic_cast<QLineSeries*>(m_ioUsage->series().at(0));
+
+    int max = io_usage->points().size();
+
+    // Shift all points over, usually I'd use auto-foreach, but cant seem to do that
+    // here for some reason (wont update the points x value)
+    if(max > 5)
+    {
+        io_usage->removePoints(0, 1);
+
+        for(int i = 0; i < io_usage->points().size(); i++)
+        {
+           QPointF p = io_usage->at(i);
+           p.setX(i);
+           io_usage->removePoints(i, 1);
+           io_usage->insert(i, p);
+        }
+    }
+
+    // Add new point
+    int requests = 0;
+    std::vector<ProcData> stats = mainThread->getProcs();
+
+    for(ProcData pd : stats) requests += pd.pcb.ioreqs;
+
+    io_usage->append(max, std::max(0, requests - io_lastCount));
+    io_lastCount = requests;
+
+    // Update chart
+    m_ioUsage->removeSeries(io_usage);
+    m_ioUsage->addSeries(io_usage);
+
+    m_ioUsage->createDefaultAxes();
+    m_ioUsage->axisY()->setMin(0);
+
+    dynamic_cast<QValueAxis*>(m_ioUsage->axisX())->setVisible(false);
 }
 
 void MainWindow::updateProcesses() {

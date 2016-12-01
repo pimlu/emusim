@@ -27,6 +27,7 @@ private slots:
     void updateProcesses();
     void updateMemoryChart();
     void updateCPUChart();
+    void updateIOChart();
     void queryProcess();
 private:
     void log(QString s) { m_commandOutput->append(s); }
@@ -40,7 +41,8 @@ private:
     QTextEdit *m_commandOutput;
     QLineEdit *m_commandInput;
 
-    QtCharts::QChart *m_cpuUsage, *m_memUsage;
+    QtCharts::QChart *m_cpuUsage, *m_memUsage, *m_ioUsage;
+    int io_lastCount;
 
     QTableView *table;
     QStandardItemModel *tModel;
