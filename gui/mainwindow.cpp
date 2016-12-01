@@ -20,10 +20,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     tabs = new QTabWidget(this);
     tabs->setGeometry(QRect(QPoint(5, 5), QSize(305, 480)));
     tabs->addTab(term_tab = new QWidget, tr("Terminal"));
-    tabs->addTab(top_tab = new QWidget, tr("System"));
-    tabs->addTab(proc_tab = new QWidget, tr("Process"));
+    tabs->addTab(sys_tab = new QWidget, tr("System"));
+    tabs->addTab(top_tab = new QWidget, tr("Processes"));
+    tabs->addTab(proc_tab = new QWidget, tr("Inspector"));
 
-    term_tab->show(); top_tab->show(); proc_tab->show();
+    term_tab->show();
 
     m_pp_button = new QPushButton("Resume Scheduler", term_tab);
     m_pp_button->setGeometry(QRect(QPoint(5, 345), QSize(290, 50)));
@@ -63,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_memUsage->createDefaultAxes();
     m_memUsage->setTitle("Memory Usage");
 
-    QChartView *mem_chartView = new QChartView(m_memUsage, top_tab);
+    QChartView *mem_chartView = new QChartView(m_memUsage, sys_tab);
     mem_chartView->setGeometry(QRect(QPoint(0, 0), QSize(300, 225)));
     mem_chartView->setRenderHint(QPainter::Antialiasing);
 
@@ -80,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_cpuUsage->createDefaultAxes();
     m_cpuUsage->setTitle("CPU Usage");
 
-    QChartView *cpu_chartView = new QChartView(m_cpuUsage, top_tab);
+    QChartView *cpu_chartView = new QChartView(m_cpuUsage, sys_tab);
     cpu_chartView->setGeometry(QRect(QPoint(0, 215), QSize(300, 240)));
     cpu_chartView->setRenderHint(QPainter::Antialiasing);
 
@@ -179,7 +180,6 @@ void MainWindow::handleSendCommand()
 
 void MainWindow::updateProcesses() {
     //std::cout<<"update"<<std::endl;
-    log("update");
 }
 
 }

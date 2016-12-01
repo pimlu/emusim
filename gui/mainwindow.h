@@ -27,8 +27,10 @@ private slots:
 private:
     void log(QString s) { m_commandOutput->append(s); }
 
+
+
     QTabWidget *tabs;
-    QWidget *term_tab, *top_tab, *proc_tab;
+    QWidget *term_tab, *sys_tab, *top_tab, *proc_tab;
 
     QPushButton *m_pp_button;
     QPushButton *m_step_button;
