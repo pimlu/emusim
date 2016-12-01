@@ -21,13 +21,15 @@ using std::unordered_map;
 
 class Scheduler {
     System *system;
+public:
+    Scheduler(System *system, int quantum);
     unordered_map<Process*, PCB> pcbs;
+
     deque<Process*> jobQueue; //waiting for adequate memory to start process
     deque<ProcRes> waitQueue; //waiting for cpu turn
     ProcRes curProc; //current active process
     int cyclesLeft = 0; //cycles left before it context switches
-public:
-    Scheduler(System *system, int quantum);
+
     int memory, used = 0, quantum, curpid = 1;
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles

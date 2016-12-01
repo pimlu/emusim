@@ -86,6 +86,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 
     tabs->show();
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateProcesses()));
+    timer->start(1000);
 }
 
 void MainWindow::handlePPButton() {
@@ -174,7 +178,8 @@ void MainWindow::handleSendCommand()
 }
 
 void MainWindow::updateProcesses() {
-
+    //std::cout<<"update"<<std::endl;
+    log("update");
 }
 
 }

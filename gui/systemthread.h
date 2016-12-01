@@ -3,11 +3,21 @@
 
 #include <thread>
 #include <mutex>
-#include <condition_variable>
+#include <utility>
+#include <vector>
 
 #include "../sim/system.h"
 
 namespace gui {
+
+enum ProcStatus { JOB, RUNNING, WAITING, BLOCKED, ENDED };
+struct ProcData {
+    ProcData(sim::Scheduler *s, sim::Process *p, ProcStatus status) :
+        pcb(s->pcbs[p]), status(status), memory(p->memory)  {}
+    sim::PCB pcb;
+    ProcStatus status;
+    int memory;
+};
 
 class SystemThread {
     std::thread *t;
@@ -32,6 +42,7 @@ public:
     sim::Process* find(int pid);
     int exec(std::string name);
     int step(int n = 1);
+    std::vector<ProcData>& getProcs();
 };
 
 }
