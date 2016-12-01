@@ -64,10 +64,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // placeholder chart for memory
     QLineSeries *mem_usage = new QLineSeries();
-    mem_usage->append(1, 10);
-    mem_usage->append(2, 10);
-    mem_usage->append(3, 20);
-    mem_usage->append(4, 10);
 
 
     m_memUsage = new QChart();
@@ -79,6 +75,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QChartView *mem_chartView = new QChartView(m_memUsage, sys_tab);
     mem_chartView->setGeometry(QRect(QPoint(0, 0), QSize(300, 225)));
     mem_chartView->setRenderHint(QPainter::Antialiasing);
+
+    QTimer *mem_timer = new QTimer(this);
+    connect(mem_timer, SIGNAL(timeout()), this, SLOT(updateMemoryChart()));
+    mem_timer->start(1000);
 
     // place holder chart for cpu
     QLineSeries *cpu_usage = new QLineSeries();
@@ -96,6 +96,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QChartView *cpu_chartView = new QChartView(m_cpuUsage, sys_tab);
     cpu_chartView->setGeometry(QRect(QPoint(0, 215), QSize(300, 240)));
     cpu_chartView->setRenderHint(QPainter::Antialiasing);
+
+    QTimer *cpu_timer = new QTimer(this);
+    connect(cpu_timer, SIGNAL(timeout()), this, SLOT(updateCPUChart()));
+    cpu_timer->start(1000);
+
+    // ----
 
     QBoxLayout *fillTop = new QVBoxLayout(top_tab);
     table = new QTableView(top_tab);
@@ -175,19 +181,9 @@ void MainWindow::handleSendCommand()
 
         log("Scheduled emu test program");
     }
-    else if(command == "add_point_test")
-    {
-        QLineSeries *cpu_usage = new QLineSeries();
-        cpu_usage->append(5, 10);
-        cpu_usage->append(6, 5);
-        cpu_usage->append(7, 10);
-        cpu_usage->append(8, 5);
-        m_cpuUsage->addSeries(cpu_usage);
-        m_cpuUsage->createDefaultAxes();
-    }
     else if(command == "help")
     {
-        log("Current list of commands: EXEC, EMU_TEST, ADD_POINT_TEST");
+        log("Current list of commands: EXEC, EMU_TEST");
     }
     else
     {
@@ -196,6 +192,75 @@ void MainWindow::handleSendCommand()
 
 }
 
+void MainWindow::updateMemoryChart()
+{
+    QLineSeries *mem_usage = dynamic_cast<QLineSeries*>(m_memUsage->series().at(0));
+
+    int max = mem_usage->points().size();
+
+    // Shift all points over, usually I'd use auto-foreach, but cant seem to do that
+    // here for some reason (wont update the points x value)
+    if(max > 5)
+    {
+        mem_usage->removePoints(0, 1);
+
+        for(int i = 0; i < mem_usage->points().size(); i++)
+        {
+           QPointF p = mem_usage->at(i);
+           p.setX(i);
+           mem_usage->removePoints(i, 1);
+           mem_usage->insert(i, p);
+        }
+    }
+
+    // Add new point
+    mem_usage->append(max, rand() % 101);
+
+    // Update chart
+    m_memUsage->removeSeries(mem_usage);
+    m_memUsage->addSeries(mem_usage);
+
+    m_memUsage->createDefaultAxes();
+    m_memUsage->axisX()->setRange(0, max);
+    m_memUsage->axisY()->setRange(0, 100);
+
+    dynamic_cast<QValueAxis*>(m_memUsage->axisX())->setVisible(false);
+}
+
+void MainWindow::updateCPUChart()
+{
+    QLineSeries *cpu_usage = dynamic_cast<QLineSeries*>(m_cpuUsage->series().at(0));
+
+    int max = cpu_usage->points().size();
+
+    // Shift all points over, usually I'd use auto-foreach, but cant seem to do that
+    // here for some reason (wont update the points x value)
+    if(max > 5)
+    {
+        cpu_usage->removePoints(0, 1);
+
+        for(int i = 0; i < cpu_usage->points().size(); i++)
+        {
+           QPointF p = cpu_usage->at(i);
+           p.setX(i);
+           cpu_usage->removePoints(i, 1);
+           cpu_usage->insert(i, p);
+        }
+    }
+
+    // Add new point
+    cpu_usage->append(max, rand() % 101);
+
+    // Update chart
+    m_cpuUsage->removeSeries(cpu_usage);
+    m_cpuUsage->addSeries(cpu_usage);
+
+    m_cpuUsage->createDefaultAxes();
+    m_cpuUsage->axisX()->setRange(0, max);
+    m_cpuUsage->axisY()->setRange(0, 100);
+
+    dynamic_cast<QValueAxis*>(m_cpuUsage->axisX())->setVisible(false);
+}
 
 void MainWindow::updateProcesses() {
     std::vector<ProcData> stats = mainThread->getProcs();

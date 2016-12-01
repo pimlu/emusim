@@ -25,10 +25,10 @@ private slots:
     void handleStepButton();
     void handleSendCommand();
     void updateProcesses();
+    void updateMemoryChart();
+    void updateCPUChart();
 private:
     void log(QString s) { m_commandOutput->append(s); }
-
-
 
     QTabWidget *tabs;
     QWidget *term_tab, *sys_tab, *top_tab, *proc_tab;
