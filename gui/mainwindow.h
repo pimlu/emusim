@@ -6,11 +6,14 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QLineEdit>
-#include <QTabWidget>-
+#include <QTabWidget>
+#include <QtCharts>
 
 #include "systemthread.h"
 
 namespace gui {
+
+using namespace QtCharts;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -32,6 +35,8 @@ private:
     QPushButton *m_submitCommand;
     QTextEdit *m_commandOutput;
     QLineEdit *m_commandInput;
+
+    QChart *m_cpuUsage, *m_memUsage;
 
     bool state = true;
 signals:

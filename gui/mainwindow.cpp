@@ -4,10 +4,14 @@
 #include "emu/emuprocess.h"
 #include "sim/process.h"
 
+#include <QtCharts>
+
 #include <stdexcept>
 #include <string>
 
 namespace gui {
+
+using namespace QtCharts;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -44,6 +48,42 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_submitCommand = new QPushButton(">", term_tab);
     m_submitCommand->setGeometry(QRect(QPoint(250, 318), QSize(45, 23)));
     connect(m_submitCommand, SIGNAL (released()), this, SLOT (handleSendCommand()));
+
+
+    // placeholder chart for memory
+    QLineSeries *mem_usage = new QLineSeries();
+    mem_usage->append(1, 10);
+    mem_usage->append(2, 10);
+    mem_usage->append(3, 20);
+    mem_usage->append(4, 10);
+
+    m_memUsage = new QChart();
+    m_memUsage->legend()->hide();
+    m_memUsage->addSeries(mem_usage);
+    m_memUsage->createDefaultAxes();
+    m_memUsage->setTitle("Memory Usage");
+
+    QChartView *mem_chartView = new QChartView(m_memUsage, top_tab);
+    mem_chartView->setGeometry(QRect(QPoint(0, 0), QSize(300, 225)));
+    mem_chartView->setRenderHint(QPainter::Antialiasing);
+
+    // place holder chart for cpu
+    QLineSeries *cpu_usage = new QLineSeries();
+    cpu_usage->append(1, 10);
+    cpu_usage->append(2, 10);
+    cpu_usage->append(3, 20);
+    cpu_usage->append(4, 10);
+
+    m_cpuUsage = new QChart();
+    m_cpuUsage->legend()->hide();
+    m_cpuUsage->addSeries(cpu_usage);
+    m_cpuUsage->createDefaultAxes();
+    m_cpuUsage->setTitle("CPU Usage");
+
+    QChartView *cpu_chartView = new QChartView(m_cpuUsage, top_tab);
+    cpu_chartView->setGeometry(QRect(QPoint(0, 215), QSize(300, 240)));
+    cpu_chartView->setRenderHint(QPainter::Antialiasing);
+
 
     tabs->show();
 }
@@ -112,9 +152,19 @@ void MainWindow::handleSendCommand()
 
         log("Scheduled emu test program");
     }
+    else if(command == "add_point_test")
+    {
+        QLineSeries *cpu_usage = new QLineSeries();
+        cpu_usage->append(5, 10);
+        cpu_usage->append(6, 5);
+        cpu_usage->append(7, 10);
+        cpu_usage->append(8, 5);
+        m_cpuUsage->addSeries(cpu_usage);
+        m_cpuUsage->createDefaultAxes();
+    }
     else if(command == "help")
     {
-        log("Current list of commands: EXEC, EMU_TEST");
+        log("Current list of commands: EXEC, EMU_TEST, ADD_POINT_TEST");
     }
     else
     {
