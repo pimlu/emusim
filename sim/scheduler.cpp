@@ -57,7 +57,10 @@ int Scheduler::doSim(int n, bool &paused) {
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
             if(res.second->type == Type::END) {
-                system->out << "exited. " << pcbs[res.first].cycles << std::endl;
+                system->out << "A process called " << pcbs[res.first].name
+                            << " with pid " << pcbs[res.first].pid
+                            << " just terminated after " << pcbs[res.first].cycles
+                            << " cycles." <<std::endl;
                 pcbs.erase(res.first);
                 delete res.first;
                 memory -= res.first->memory;

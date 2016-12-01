@@ -184,7 +184,7 @@ void MainWindow::handleSendCommand()
         log("---------");
         for(ProcData pd : stats)
         {
-            log(QString("[%1: %2] Status: %3, Memory: %4, IO Requests: %5")
+            log(QString("[%1: %2] \t Status: %3, Memory: %4, IO Requests: %5")
             .arg
             (
                     QString::number(pd.pcb.pid),
