@@ -210,7 +210,9 @@ void MainWindow::updateProcesses() {
              new NumericStdItem(pd.memory), new NumericStdItem(pd.pcb.ioreqs)});
         tModel->appendRow(row);
     }
-    table->update();
+    //re-sort it to fix appending rows killing ordering (better way?)
+    QHeaderView *header = table->horizontalHeader();
+    table->sortByColumn(header->sortIndicatorSection(), header->sortIndicatorOrder());
 }
 
 }
