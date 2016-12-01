@@ -9,6 +9,7 @@
 #include <QTabWidget>
 #include <QTimer>
 #include <QtCharts>
+#include <QStandardItemModel>
 
 #include "systemthread.h"
 
@@ -39,6 +40,10 @@ private:
     QLineEdit *m_commandInput;
 
     QtCharts::QChart *m_cpuUsage, *m_memUsage;
+
+    QTableView *table;
+    QStandardItemModel *tModel;
+
     QTimer *timer;
 
     bool state = true;

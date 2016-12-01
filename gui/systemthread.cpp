@@ -64,7 +64,7 @@ int SystemThread::step(int n) {
     return system->sched->doSim(n, p);
 }
 
-std::vector<ProcData>& SystemThread::getProcs() {
+std::vector<ProcData> SystemThread::getProcs() {
     ulock_recmtx lck(schedmtx);
     std::vector<ProcData> vec;
     sim::Scheduler *s = system->sched;
