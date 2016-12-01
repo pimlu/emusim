@@ -13,3 +13,7 @@
     cd ./emusim/
     qmake
     make
+
+**Final Steps**
+
+ - Copy `data` folder to the resulting build folder (typically something like `../build-emusim-Desktop_Qt_5_7_0_MSVC2013_64bit-Debug`)
