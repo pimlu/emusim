@@ -10,6 +10,8 @@
 
 namespace gui {
 
+using ulock_recmtx = std::unique_lock<std::recursive_mutex>;
+
 enum ProcStatus { JOB, RUNNING, WAITING, BLOCKED, ENDED };
 struct ProcData {
     ProcData(sim::Scheduler *s, sim::Process *p, ProcStatus status) :
@@ -21,11 +23,11 @@ struct ProcData {
 
 class SystemThread {
     std::thread *t;
-    std::recursive_mutex schedmtx;
     void tRun();
     bool paused = true;
     bool tLoop = true;
 public:
+    std::recursive_mutex schedmtx;
     const int PERIOD = 10;
     SystemThread(sim::System *system, int hz);
     ~SystemThread();
@@ -43,6 +45,7 @@ public:
     int exec(std::string name);
     int step(int n = 1);
     std::vector<ProcData> getProcs();
+    ulock_recmtx getLock();
 };
 
 }

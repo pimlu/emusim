@@ -27,6 +27,7 @@ private slots:
     void updateProcesses();
     void updateMemoryChart();
     void updateCPUChart();
+    void queryProcess();
 private:
     void log(QString s) { m_commandOutput->append(s); }
 

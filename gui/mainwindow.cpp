@@ -274,5 +274,19 @@ void MainWindow::updateProcesses() {
     QHeaderView *header = table->horizontalHeader();
     table->sortByColumn(header->sortIndicatorSection(), header->sortIndicatorOrder());
 }
+//call this when someone queries a process
+void MainWindow::queryProcess() {
+    ulock_recmtx lck = mainThread->getLock();
+    sim::Scheduler *sched = mainThread->system->sched;
+    int pid = 0; //replace 0: reads from some text field
+    sim::Process *p = sched->find(pid);
+    if(!p) {
+        //process does not exist
+        return;
+    }
+    sim::PCB &pcb = sched->pcbs[p];
+    int memory = p->memory;
+    //do ALL of your UI reading and writing related to the process query in here
+}
 
 }

@@ -4,8 +4,6 @@
 
 namespace gui {
 
-using std::unique_lock;
-using ulock_recmtx = std::unique_lock<std::recursive_mutex>;
 SystemThread::SystemThread(sim::System *system, int hz) : system(system), hz(hz) {
     schedmtx.lock();
     t = new std::thread(&SystemThread::tRun, this);
@@ -85,6 +83,10 @@ std::vector<ProcData> SystemThread::getProcs() {
         vec.push_back(ProcData(s, ps.first, ProcStatus::BLOCKED));
     }
     return vec;
+}
+
+ulock_recmtx SystemThread::getLock() {
+    return ulock_recmtx(schedmtx);
 }
 
 
