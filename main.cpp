@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     memcpy(memory, program, sizeof(program));
 
     // Create process and schedule it
-    emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, sizeof(memory));
+    emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, 0x2000);
     mainThread->add(emu, "emu");
     // ---
 
