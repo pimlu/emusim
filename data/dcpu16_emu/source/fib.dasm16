@@ -1,12 +1,22 @@
 ; Credit to https://gist.github.com/ehaliewicz/2523345
 
+INT 5            ; inputn syscall, store n into A
+SET J, A         ; move n to J so we can keep track of it so perform n fibonaci numbers [1, n]
+SET I, 0
+
+:find_fib
+ADD I, 1         ; increment iteration
+
+IFG I, J
+SET PC, done     ; if we've finished all n iterations, terminate
+
 SET A, 0
 SET B, 1
-SET C, 20        ; set to 20 to find the twentieth fibonacci number
+SET C, I
 
 :test
 IFE C, 0
-SET PC, done
+SET PC, print    ; finished finding fibonaci for current I
     
 ;; loop 
 SET X, A
@@ -16,7 +26,7 @@ SET B, X
 SUB C, 1
 SET PC, test
 
-:done            ; answer is in register A
+:print           ; answer is in register A
 
                  ; print result
 INT 4            ; printn syscall
@@ -27,4 +37,7 @@ SET A, 0x1000    ; address of string
 SET B, 1         ; length
 INT 2            ; print syscall
 
+SET PC, find_fib
+
+:done
 INT 1            ; terminate/EOP syscall

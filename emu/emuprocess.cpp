@@ -102,10 +102,10 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         case WRITE:     break;
 
         case INPUT:     break;
-        case INPUTN:    break;
+        case INPUTN:    registers.A = ((SRInt*) res)->val;  break;
 
         // Likely some kind of error, we will go ahead an terminate the process
-        default: return new Syscall(Type::END);
+        //default: return new Syscall(Type::NONE);
     }
 
     int word;
@@ -161,14 +161,14 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                 case Opcodes::ASR: *b_ptr >>= *a_ptr;   break;
                 case Opcodes::SHL: *b_ptr <<= *a_ptr;   break;
 
-                case Opcodes::IFB: if(*a_ptr & *b_ptr == 0) skip_instruction = true; break;
-                case Opcodes::IFC: if(*a_ptr & *b_ptr != 0) skip_instruction = true; break;
+                case Opcodes::IFB: if((*a_ptr & *b_ptr) == 0) skip_instruction = true; break;
+                case Opcodes::IFC: if((*a_ptr & *b_ptr) != 0) skip_instruction = true; break;
 
                 case Opcodes::IFE: if(*a_ptr != *b_ptr) skip_instruction = true; break;
                 case Opcodes::IFN: if(*a_ptr == *b_ptr) skip_instruction = true; break;
 
-                case Opcodes::IFG: if(*a_ptr < *b_ptr) skip_instruction = true; break;
-                case Opcodes::IFL: if(*a_ptr > *b_ptr) skip_instruction = true; break;
+                case Opcodes::IFG: if(*a_ptr >= *b_ptr) skip_instruction = true; break;
+                case Opcodes::IFL: if(*a_ptr <= *b_ptr) skip_instruction = true; break;
 
                 case SpecialOpcodes::INT:
                 {
@@ -195,6 +195,8 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
 
                         default:        ret = new Syscall(Type::NONE);      break;
                     }
+
+                    lastCall = type;
                     goto END;
                 }
 
