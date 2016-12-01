@@ -138,10 +138,10 @@ void MainWindow::handleSendCommand()
     if(line.size() == 0) return;
     QString command = line[0].toLower();
 
-    if(command == "exec")
+    if(command == "load")
     {
         if(line.size() < 2) {
-            log("No file given; run `exec fileName`");
+            log("No file given; run `load fileName`");
         } else {
             std::string file = line[1].toUtf8().constData();
             int pid = mainThread->exec(file);
@@ -149,39 +149,66 @@ void MainWindow::handleSendCommand()
                              file+" as PID "+std::to_string(pid)+"."));
         }
     }
-    else if(command == "emu_test")
+    else if(command == "proc")
     {
-        char *memory = new char[0x10000];
+        std::vector<ProcData> stats = mainThread->getProcs();
 
-        // Hello World, prints "Hello, world!" to the screen
-        unsigned char program[] =
+        log("Processes");
+        log("---------");
+        for(ProcData pd : stats)
         {
-            0xc1, 0x7f, 0x48, 0x00, 0x00, 0x10, 0xc1, 0x7f,
-            0x65, 0x00, 0x01, 0x10, 0xc1, 0x7f, 0x6c, 0x00,
-            0x02, 0x10, 0xc1, 0x7f, 0x6c, 0x00, 0x03, 0x10,
-            0xc1, 0x7f, 0x6f, 0x00, 0x04, 0x10, 0xc1, 0x7f,
-            0x2c, 0x00, 0x05, 0x10, 0xc1, 0x7f, 0x20, 0x00,
-            0x06, 0x10, 0xc1, 0x7f, 0x77, 0x00, 0x07, 0x10,
-            0xc1, 0x7f, 0x6f, 0x00, 0x08, 0x10, 0xc1, 0x7f,
-            0x72, 0x00, 0x09, 0x10, 0xc1, 0x7f, 0x6c, 0x00,
-            0x0a, 0x10, 0xc1, 0x7f, 0x64, 0x00, 0x0b, 0x10,
-            0xc1, 0x7f, 0x21, 0x00, 0x0c, 0x10, 0xc1, 0xaf,
-            0x0d, 0x10, 0x01, 0x7c, 0x00, 0x10, 0x21, 0xbc,
-            0x00, 0x7d, 0x02, 0x00, 0x81, 0x7f, 0x2e, 0x00
-        };
+            log(QString("[%1: %2] Status: %3, Memory: %4, IO Requests: %5")
+            .arg
+            (
+                    QString::number(pd.pcb.pid),
+                    QString::fromStdString(pd.pcb.name),
+                    statuses[pd.status],
+                    QString::number(pd.memory),
+                    QString::number(pd.pcb.ioreqs)
+            ));
+        }
+    }
+    else if(command == "mem")
+    {
+        float percent = ((float) mainThread->system->usedMem / (float) mainThread->system->memory) * 100;
 
-        // Copy program into processes memory
-        memcpy(memory, program, sizeof(program));
-
-        // Create process and schedule it
-        emu::EmuProcess *emu = new emu::EmuProcess((char*) memory, sizeof(memory));
-        mainThread->add(emu, "emu");
-
-        log("Scheduled emu test program");
+        log(QString("Currently using %1 out of %2 available memory (%3%).")
+        .arg
+        (
+                QString::number(mainThread->system->usedMem),
+                QString::number(mainThread->system->memory),
+                QString::number(percent)
+        ));
+    }
+    else if(command == "exe")
+    {
+        if(line.size() > 1)
+        {
+            int steps = line[1].toInt();
+            mainThread->step(steps);
+            log("Stepped " + line[1] + " cycles.");
+        }
+        else
+        {
+            handlePPButton();
+        }
+    }
+    else if(command == "reset")
+    {
+        // @TODO!!!
+        log("TODO TODO TODO TODO TODO TODO");
+    }
+    else if(command == "exit")
+    {
+        exit(1);
     }
     else if(command == "help")
     {
-        log("Current list of commands: EXEC, EMU_TEST");
+        log("Current list of commands: PROC, MEM, LOAD, EXE, RESET, EXIT, HELP");
+        log("");
+        log("Special usages:");
+        log("\t EXE, EXE <# of steps>");
+        log("\t LOAD <binary name/file name>");
     }
     else
     {
