@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_cpuUsage->legend()->hide();
     m_cpuUsage->addSeries(cpu_usage);
     m_cpuUsage->createDefaultAxes();
-    m_cpuUsage->setTitle("CPU Usage");
+    m_cpuUsage->setTitle("CPU Usage (Cycles per chart update)");
 
     QChartView *cpu_chartView = new QChartView(m_cpuUsage, sys_tab);
     cpu_chartView->setGeometry(QRect(QPoint(263, 0), QSize(263, 225)));
@@ -301,7 +301,13 @@ void MainWindow::updateCPUChart()
     }
 
     // Add new point
-    cpu_usage->append(max, rand() % 101);
+    int cycles = 0;
+    std::vector<ProcData> stats = mainThread->getProcs();
+
+    for(ProcData pd : stats) cycles += pd.pcb.cycles;
+
+    cpu_usage->append(max, std::max(0, cycles - cpu_lastCount));
+    cpu_lastCount = cycles;
 
     // Update chart
     m_cpuUsage->removeSeries(cpu_usage);
@@ -309,7 +315,7 @@ void MainWindow::updateCPUChart()
 
     m_cpuUsage->createDefaultAxes();
     m_cpuUsage->axisX()->setRange(0, max);
-    m_cpuUsage->axisY()->setRange(0, 100);
+    m_cpuUsage->axisY()->setMin(0);
 
     dynamic_cast<QValueAxis*>(m_cpuUsage->axisX())->setVisible(false);
 }
