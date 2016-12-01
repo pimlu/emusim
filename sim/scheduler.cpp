@@ -57,6 +57,7 @@ int Scheduler::doSim(int n, bool &paused) {
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
             if(res.second->type == Type::END) {
+                system->out << "exited. " << pcbs[res.first].cycles << std::endl;
                 pcbs.erase(res.first);
                 delete res.first;
                 memory -= res.first->memory;
