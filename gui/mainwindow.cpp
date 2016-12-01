@@ -212,7 +212,7 @@ void MainWindow::updateMemoryChart()
     }
 
     // Add new point
-    mem_usage->append(max, 5);
+    mem_usage->append(max, mainThread->system->usedMem / mainThread->system->memory);
 
     // Update chart
     m_memUsage->removeSeries(mem_usage);
