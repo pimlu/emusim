@@ -13,6 +13,9 @@
 
 namespace gui {
 
+//enum ProcStatus { JOB, RUNNING, WAITING, BLOCKED, ENDED };
+QStringList statuses = {"job", "run", "wait", "blocked", "ended"};
+
 using namespace QtCharts;
 
 class NumericStdItem : public QStandardItem {
@@ -107,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     table = new QTableView(top_tab);
     table->setSortingEnabled(true);
     tModel = new QStandardItemModel();
-    tModel->setHorizontalHeaderLabels(QStringList {"PID","name","memory","IO"});
+    tModel->setHorizontalHeaderLabels(QStringList {"PID","status","name","memory","IO"});
     table->setModel(tModel);
     fillTop->addWidget(table, 1);
     tabs->show();
@@ -267,11 +270,14 @@ void MainWindow::updateProcesses() {
     tModel->removeRows(0, tModel->rowCount());
     for(ProcData pd : stats) {
         const QList<QStandardItem*> row(
-            {new NumericStdItem(pd.pcb.pid), new QStandardItem(QString::fromStdString(pd.pcb.name)),
+            {new NumericStdItem(pd.pcb.pid), new QStandardItem(statuses[pd.status]),
+             new QStandardItem(QString::fromStdString(pd.pcb.name)),
              new NumericStdItem(pd.memory), new NumericStdItem(pd.pcb.ioreqs)});
         tModel->appendRow(row);
     }
-    table->update();
+    //re-sort it to fix appending rows killing ordering (better way?)
+    QHeaderView *header = table->horizontalHeader();
+    table->sortByColumn(header->sortIndicatorSection(), header->sortIndicatorOrder());
 }
 
 }

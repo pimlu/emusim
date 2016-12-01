@@ -78,7 +78,8 @@ std::vector<ProcData> SystemThread::getProcs() {
         vec.push_back(ProcData(s, pr.first, ProcStatus::WAITING));
     }
     for(sim::ProcRes pr : system->finishQueue) {
-        vec.push_back(ProcData(s, pr.first, ProcStatus::WAITING));
+        vec.push_back(ProcData(s, pr.first, pr.second->type == sim::Type::END ?
+                                   ProcStatus::ENDED : ProcStatus::WAITING));
     }
     for(sim::ProcCall ps : system->blockQueue) {
         vec.push_back(ProcData(s, ps.first, ProcStatus::BLOCKED));
