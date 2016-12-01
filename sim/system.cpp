@@ -2,6 +2,8 @@
 #include "../emu/emuprocess.h"
 namespace sim {
 
+using std::string;
+
 System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path) :
     fs(path), memory(memory), in(in), out(out) {
     sched = new Scheduler(this, quantum);
@@ -29,10 +31,15 @@ enum Type {
         }
 
         ProcCall req = blockQueue.front();
+        Process *p = req.first;
         Syscall *sc = req.second;
         ProcRes res(req.first, nullptr);
+        PCB &pcb = sched->pcbs[p];
+#define DOIO do { if(cycles<IOCOST) return ret; \
+        cycles -= IOCOST; \
+        pcb.ioreqs++; } while(0);
         //we use blocks inside cases to avoid jumping over initialization
-        switch(req.second->type) {
+        switch(sc->type) {
             case Type::NONE:
 
                 break;
@@ -47,27 +54,27 @@ enum Type {
                 }break;
             case Type::PRINT:
                 {SCString *scs = (SCString*) sc;
-                if(cycles<IOCOST) return ret;
-                cycles -= IOCOST;
+                DOIO;
+                pcb.obytes += scs->len;
 
                 out.write(scs->str, scs->len);
                 res.second = new SRInt(Type::IORES, true);
 
                 }break;
             case Type::INPUT:
-                {if(cycles<IOCOST) return ret;
-                cycles -= IOCOST;
+                {DOIO;
 
                 char *buffer = new char[256];
                 in.getline(buffer, 256);
-
-                res.second = new SRString(Type::IORES, buffer, in.gcount());
+                int len = in.gcount();
+                pcb.ibytes += len;
+                res.second = new SRString(Type::IORES, buffer, len);
 
                 }break;
             case Type::PRINTN:
                 {SCInt *sci = (SCInt*) sc;
-                if(cycles<IOCOST) return ret;
-                cycles -= IOCOST;
+                DOIO;
+                pcb.obytes += 2;
 
                 out << sci->val;
 
@@ -75,14 +82,30 @@ enum Type {
 
                 }break;
             case Type::INPUTN:
-                {if(cycles<IOCOST) return ret;
-                cycles -= IOCOST;
+                {DOIO;
+                pcb.obytes += 2;
 
                 int n;
                 in >> n;
 
                 res.second = new SRInt(Type::IORES, n);
 
+                }break;
+            case Type::READ:
+                {SCRead *scr = (SCRead*) sc;
+                DOIO;
+                pcb.ibytes += scr->len;
+                char *data = fs.readFile(string(scr->file, scr->flen), scr->seek, scr->len);
+
+                res.second = new SRString(Type::IORES, data, scr->len);
+                }break;
+            case Type::WRITE:
+                {SCWrite *scw = (SCWrite*) sc;
+                DOIO;
+                pcb.obytes += scw->len;
+                bool good = fs.writeFile(string(scw->file, scw->flen), scw->seek, scw->len, scw->data);
+
+                res.second = new SRInt(Type::IORES, good);
                 }break;
         }
         ret = true;

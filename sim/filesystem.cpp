@@ -22,7 +22,7 @@ namespace sim {
         return buffer;
     }
 
-    bool FileSystem::writeFile(string name, int seek, int len, char *data) {
+    bool FileSystem::writeFile(string name, int seek, int len, const char *data) {
         string pname = path + "/" + name;
         if(!std::ifstream(pname).good()) { std::ofstream touch(pname); }
 

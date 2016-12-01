@@ -28,17 +28,17 @@ struct SCString : Syscall {
 };
 
 struct SCRead : Syscall {
-    SCRead(const char *file, int seek, int len) :
-        Syscall(Type::READ), file(file), seek(seek), len(len) {}
+    SCRead(const char *file, int flen, int seek, int len) :
+        Syscall(Type::READ), file(file), flen(flen), seek(seek), len(len) {}
     const char *file;
-    int seek, len;
+    int flen, seek, len;
 };
 
 struct SCWrite : Syscall {
-    SCWrite(const char *file, int seek, const char *data, int len) :
-        Syscall(Type::WRITE), file(file), seek(seek), data(data), len(len) {}
+    SCWrite(const char *file, int flen, int seek, const char *data, int len) :
+        Syscall(Type::WRITE), file(file), flen(flen), seek(seek), data(data), len(len) {}
     const char *file;
-    int seek;
+    int flen, seek;
     const char *data;
     int len;
 };
