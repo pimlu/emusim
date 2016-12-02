@@ -359,6 +359,7 @@ void MainWindow::updateCPUChart()
 
 void MainWindow::updateIOChart()
 {
+    if(!mainThread->schedmtx.try_lock()) return;
     QLineSeries *io_usage = dynamic_cast<QLineSeries*>(m_ioUsage->series().at(0));
 
     int max = io_usage->points().size();
@@ -395,10 +396,13 @@ void MainWindow::updateIOChart()
     m_ioUsage->axisY()->setMin(0);
 
     dynamic_cast<QValueAxis*>(m_ioUsage->axisX())->setVisible(false);
+    mainThread->schedmtx.unlock();
 }
 
 void MainWindow::updateProcesses() {
+    if(!mainThread->schedmtx.try_lock()) return;
     std::vector<ProcData> stats = mainThread->getProcs();
+    mainThread->schedmtx.unlock();
     tModel->removeRows(0, tModel->rowCount());
     for(ProcData pd : stats) {
         const QList<QStandardItem*> row(

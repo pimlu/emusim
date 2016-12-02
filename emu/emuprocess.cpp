@@ -226,7 +226,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
 
                             case INPUT:     ret = new Syscall(Type::INPUT);     break;
                             case INPUTN:    ret = new Syscall(Type::INPUTN);    break;
-                            case END:       ret = new Syscall(Type::END);       break;
+                            case END:       ret = new SCInt(Type::END, registers.A);       break;
 
                             default:        ret = new Syscall(Type::NONE);      break;
                         }
