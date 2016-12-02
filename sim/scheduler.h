@@ -13,11 +13,12 @@ namespace sim {
 struct PCB {
     unsigned long long cycles, sample, ioreqs, ibytes, obytes;
     std::string name;
-    int pid;
+    int pid, priority;
 };
 
 using std::deque;
 using std::unordered_map;
+
 
 class Scheduler {
     System *system;

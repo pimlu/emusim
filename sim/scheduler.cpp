@@ -39,7 +39,7 @@ int Scheduler::doSim(int n, bool &paused) {
             if(call->type == NONE) {
                 waitQueue.push_back(ProcRes(proc, new Sysres(Type::NONE)));
             } else {
-                system->blockQueue.push_back(ProcCall(proc, call));
+                system->addBlock(ProcCall(proc, call));
             }
             curProc = ProcRes(nullptr, nullptr);
 
@@ -94,7 +94,9 @@ void Scheduler::remove(Process *p) {
     jobQueue.erase(std::remove(jobQueue.begin(), jobQueue.end(), p),
                    jobQueue.end());
     clearDeque(waitQueue, p);
-    clearDeque(system->blockQueue, p);
+    system->blockQueue.remove_if([&](ProcCall e) {
+        return e.first == p;
+    });
     clearDeque(system->finishQueue, p);
     if(curProc.first == p) {
         delete curProc.second;

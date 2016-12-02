@@ -1,6 +1,7 @@
 #include "system.h"
 #include "../emu/emuprocess.h"
 namespace sim {
+using std::priority_queue;
 
 using std::string;
 
@@ -8,13 +9,23 @@ std::function<void(const char *s)> noop = [](const char *s) -> void { };
 
 System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path,
                std::function<void(const char *s)> &log = noop) :
-    log(log), fs(path), memory(memory), in(in), out(out) {
+               log(log), fs(path), memory(memory),in(in), out(out),
+               blockQueue([&](ProcCall a, ProcCall b) -> bool {
+                    return sched->pcbs[a.first].priority < sched->pcbs[b.first].priority;
+               }) {
     sched = new Scheduler(this, quantum);
 }
 
 System::~System() {
     delete sched;
 }
+
+void System::addBlock(ProcCall pc) {
+    blockQueue.push(pc);
+}
+/*std::vector<ProcCall> System::getBlock() {
+    return Container(blockQueue);
+}*/
 
 const int IOCOST = 30;
 bool System::runSyscalls(int c) {
@@ -33,7 +44,7 @@ enum Type {
             return ret;
         }
 
-        ProcCall req = blockQueue.front();
+        ProcCall req = blockQueue.top();
         Process *p = req.first;
         Syscall *sc = req.second;
         ProcRes res(req.first, nullptr);
@@ -112,7 +123,7 @@ enum Type {
                 }break;
         }
         ret = true;
-        blockQueue.pop_front();
+        blockQueue.pop();
         delete sc;
         if(res.first) finishQueue.push_back(res);
     }
@@ -130,7 +141,7 @@ int System::exec(std::string name) {
 }
 
 void System::reset() {
-    blockQueue.clear();
+    while(!blockQueue.empty()) blockQueue.pop();
     finishQueue.clear();
     usedMem = 0;
     sched->jobQueue.clear();

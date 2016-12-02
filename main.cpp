@@ -20,10 +20,10 @@ int main(int argc, char *argv[])
     gui::MainWindow mainWindow;
 
     //sim::Process *p = new sim::DummyProcess(200);
-    std::function<void(const char *s)> cb = [&] (const char *s) -> void {
+    std::function<void(const char *s)> log = [&] (const char *s) -> void {
         mainWindow.log(QString::fromStdString(s));
     };
-    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout, "data", cb);
+    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout, "data", log);
 
 
     gui::SystemThread *mainThread = new gui::SystemThread(mainSystem, 10000);
