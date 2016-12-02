@@ -176,6 +176,15 @@ void MainWindow::handleSendCommand()
                              file+" as PID "+std::to_string(pid)+"."));
         }
     }
+    else if(command == "kill")
+    {
+        if(line.size() < 2) {
+            log("No file given; run `load fileName`");
+        } else {
+            int pid = line[1].toInt();
+            mainThread->remove(pid);
+        }
+    }
     else if(command == "proc")
     {
         std::vector<ProcData> stats = mainThread->getProcs();

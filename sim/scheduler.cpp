@@ -62,8 +62,8 @@ int Scheduler::doSim(int n, bool &paused) {
                             << " just terminated after " << pcbs[res.first].cycles
                             << " cycles." <<std::endl;
                 pcbs.erase(res.first);
-                delete res.first;
                 system->usedMem -= res.first->memory;
+                delete res.first;
                 //TODO react to return code
             } else waitQueue.push_back(res);
             system->finishQueue.pop_front();
@@ -92,6 +92,11 @@ void Scheduler::remove(Process *p) {
     clearDeque(waitQueue, p);
     clearDeque(system->blockQueue, p);
     clearDeque(system->finishQueue, p);
+    if(curProc.first == p) {
+        delete curProc.second;
+        curProc = {nullptr, nullptr};
+    }
+    system->finishQueue.push_back(ProcRes(p, new SRInt(Type::END, -1)));
 }
 void Scheduler::remove(int pid) {
     remove(find(pid));
