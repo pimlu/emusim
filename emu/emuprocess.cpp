@@ -105,7 +105,7 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         case INPUTN:    registers.A = ((SRInt*) res)->val;  break;
 
         // Likely some kind of error, we will go ahead an terminate the process
-        //default: return new Syscall(Type::NONE);
+        case END: return new Syscall(Type::END);
     }
 
     int word;
