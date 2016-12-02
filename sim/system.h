@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 namespace sim { class System; }
 #include "scheduler.h"
