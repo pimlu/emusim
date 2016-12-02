@@ -145,65 +145,69 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
         if(!skip_instruction)
         {
             // Handle the opcode
-            switch(opcode)
+            try
             {
-                case Opcodes::SET: *b_ptr = *a_ptr;     break;
-                case Opcodes::ADD: *b_ptr += *a_ptr;    break;
-                case Opcodes::SUB: *b_ptr -= *a_ptr;    break;
-
-                case Opcodes::MUL: *b_ptr *= *a_ptr;    break;
-                case Opcodes::DIV: *b_ptr /= *a_ptr;    break;
-
-                case Opcodes::AND: *b_ptr &= *a_ptr;    break;
-                case Opcodes::BOR: *b_ptr |= *a_ptr;    break;
-                case Opcodes::XOR: *b_ptr ^= *a_ptr;    break;
-
-                case Opcodes::ASR: *b_ptr >>= *a_ptr;   break;
-                case Opcodes::SHL: *b_ptr <<= *a_ptr;   break;
-
-                case Opcodes::IFB: if((*a_ptr & *b_ptr) == 0) skip_instruction = true; break;
-                case Opcodes::IFC: if((*a_ptr & *b_ptr) != 0) skip_instruction = true; break;
-
-                case Opcodes::IFE: if(*a_ptr != *b_ptr) skip_instruction = true; break;
-                case Opcodes::IFN: if(*a_ptr == *b_ptr) skip_instruction = true; break;
-
-                case Opcodes::IFG: if(*a_ptr >= *b_ptr) skip_instruction = true; break;
-                case Opcodes::IFL: if(*a_ptr <= *b_ptr) skip_instruction = true; break;
-
-                case SpecialOpcodes::INT:
+                switch(opcode)
                 {
-                    Type type = static_cast<Type>(*a_ptr);
+                    case Opcodes::SET: *b_ptr = *a_ptr;     break;
+                    case Opcodes::ADD: *b_ptr += *a_ptr;    break;
+                    case Opcodes::SUB: *b_ptr -= *a_ptr;    break;
 
-                    switch(type)
+                    case Opcodes::MUL: *b_ptr *= *a_ptr;    break;
+                    case Opcodes::DIV: *b_ptr /= *a_ptr;    break;
+
+                    case Opcodes::AND: *b_ptr &= *a_ptr;    break;
+                    case Opcodes::BOR: *b_ptr |= *a_ptr;    break;
+                    case Opcodes::XOR: *b_ptr ^= *a_ptr;    break;
+
+                    case Opcodes::ASR: *b_ptr >>= *a_ptr;   break;
+                    case Opcodes::SHL: *b_ptr <<= *a_ptr;   break;
+
+                    case Opcodes::IFB: if((*a_ptr & *b_ptr) == 0) skip_instruction = true; break;
+                    case Opcodes::IFC: if((*a_ptr & *b_ptr) != 0) skip_instruction = true; break;
+
+                    case Opcodes::IFE: if(*a_ptr != *b_ptr) skip_instruction = true; break;
+                    case Opcodes::IFN: if(*a_ptr == *b_ptr) skip_instruction = true; break;
+
+                    case Opcodes::IFG: if(*a_ptr >= *b_ptr) skip_instruction = true; break;
+                    case Opcodes::IFL: if(*a_ptr <= *b_ptr) skip_instruction = true; break;
+
+                    case SpecialOpcodes::INT:
                     {
-                        case PRINT:
-                            // DCPU-16 is word aligned so we will just treat string as seperated by spacess...
-                            // Its ultimately okay because it looks ~cool~ and ~retro~ that way.
-                            ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 1);
-                            break;
+                        Type type = static_cast<Type>(*a_ptr);
 
-                        case PRINTN:
-                            ret = new SCInt(Type::PRINTN, registers.A);
-                            break;
+                        switch(type)
+                        {
+                            case PRINT:
+                                // DCPU-16 is word aligned so we will just treat string as seperated by spacess...
+                                // Its ultimately okay because it looks ~cool~ and ~retro~ that way.
+                                ret = new SCString(Type::PRINT, (char*) (ram + registers.A), (registers.B * 2) - 1);
+                                break;
 
-                        case READ:      break;
-                        case WRITE:     break;
+                            case PRINTN:
+                                ret = new SCInt(Type::PRINTN, registers.A);
+                                break;
 
-                        case INPUT:     ret = new Syscall(Type::INPUT);     break;
-                        case INPUTN:    ret = new Syscall(Type::INPUTN);    break;
-                        case END:       ret = new Syscall(Type::END);       break;
+                            case READ:      break;
+                            case WRITE:     break;
 
-                        default:        ret = new Syscall(Type::NONE);      break;
+                            case INPUT:     ret = new Syscall(Type::INPUT);     break;
+                            case INPUTN:    ret = new Syscall(Type::INPUTN);    break;
+                            case END:       ret = new Syscall(Type::END);       break;
+
+                            default:        ret = new Syscall(Type::NONE);      break;
+                        }
+
+                        lastCall = type;
+                        goto END;
                     }
 
-                    lastCall = type;
-                    goto END;
+                    default:
+                        printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
+                        break;
                 }
-
-                default:
-                    printf("Instruction: \t 0x%hx (unknowned/unimplemented)\n", opcode);
-                    break;
             }
+            catch(...) { }
         }
         else skip_instruction = false;
 
