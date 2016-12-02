@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // ----
 
     clock_label = new QLabel(sys_tab);
-    clock_label->setText("Simulator Clock: \t 1337");
+    clock_label->setText("Simulator Clock: \t0");
     clock_label->setFont(QFont( "Arial", 20, QFont::Bold));
     clock_label->setGeometry(QRect(QPoint(5, 230), QSize(500, 25)));
 
