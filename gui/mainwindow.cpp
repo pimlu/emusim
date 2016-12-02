@@ -38,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     tabs->addTab(term_tab = new QWidget, tr("Terminal"));
     tabs->addTab(sys_tab = new QWidget, tr("System"));
     tabs->addTab(top_tab = new QWidget, tr("Processes"));
-    tabs->addTab(proc_tab = new QWidget, tr("Inspector"));
 
     term_tab->show();
 
@@ -127,6 +126,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // ----
 
+    clock_label = new QLabel(sys_tab);
+    clock_label->setText("Simulator Clock: \t 1337");
+    clock_label->setFont(QFont( "Arial", 20, QFont::Bold));
+    clock_label->setGeometry(QRect(QPoint(5, 230), QSize(500, 25)));
+
+    QTimer *clock_timer = new QTimer(this);
+    connect(clock_timer, SIGNAL(timeout()), this, SLOT(updateClockLabel()));
+    clock_timer->start(1000);
+
+    // ---
+
+
     QBoxLayout *fillTop = new QVBoxLayout(top_tab);
     table = new QTableView(top_tab);
     table->setSortingEnabled(true);
@@ -142,6 +153,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(timer, SIGNAL(timeout()), this, SLOT(updateProcesses()));
     timer->start(1000);
 }
+
+void MainWindow::updateClockLabel() {
+    if(!mainThread) throw std::runtime_error("mainThread is null");
+    clock_label->setText("Simulator Clock: \t" + QString::number(mainThread->system->sched->cycle));
+}
+
 
 void MainWindow::handlePPButton() {
     if(!mainThread) throw std::runtime_error("mainThread is null");

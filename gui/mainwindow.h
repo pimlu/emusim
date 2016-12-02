@@ -28,18 +28,20 @@ private slots:
     void updateMemoryChart();
     void updateCPUChart();
     void updateIOChart();
+    void updateClockLabel();
     void queryProcess(int pid);
 private:
     void log(QString s) { m_commandOutput->append(s); }
 
     QTabWidget *tabs;
-    QWidget *term_tab, *sys_tab, *top_tab, *proc_tab;
+    QWidget *term_tab, *sys_tab, *top_tab;
 
     QPushButton *m_pp_button;
     QPushButton *m_step_button;
     QPushButton *m_submitCommand;
     QTextEdit *m_commandOutput;
     QLineEdit *m_commandInput;
+    QLabel *clock_label;
 
     QtCharts::QChart *m_cpuUsage, *m_memUsage, *m_ioUsage;
     int cpu_lastCount=0, io_lastCount=0;
