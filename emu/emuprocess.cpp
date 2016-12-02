@@ -15,7 +15,7 @@ namespace emu {
 EmuProcess::EmuProcess(char *ram, int len) : Process(len), ram((short*) ram) { }
 
 EmuProcess::~EmuProcess() {
-    //delete[] ram;
+    delete[] ram;
 }
 
 // b => true, if finding value for 'b', otherwise we're finding value for 'a'
