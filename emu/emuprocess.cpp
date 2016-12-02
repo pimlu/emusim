@@ -98,8 +98,19 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
     {
         case NONE: break;
 
-        case READ:      break;
-        case WRITE:     break;
+        case READ:
+        {
+            // A = filename, B = filename length, X = seek, Y = length, C = output buffer
+            SRString *r = (SRString*) res;
+            for(int i = 0; i < r->len; i++) ram[registers.C + i] = r->text[i];
+            break;
+        }
+        case WRITE:
+        {
+            SRInt *r = (SRInt*) res;
+            if(r->val < 1) printf("Write failed\n");
+            break;
+        }
 
         case INPUT:     break;
         case INPUTN:    registers.A = ((SRInt*) res)->val;  break;
@@ -188,12 +199,34 @@ Syscall* EmuProcess::run(int &c, Sysres *res)
                                 ret = new SCInt(Type::PRINTN, registers.A);
                                 break;
 
-                            case READ:      break;
-                            case WRITE:     break;
+                            case READ:
+                            {
+                                char* filename = new char[registers.B];
+                                for(int i = 0; i < registers.B; i++) filename[i] = (char) ram[registers.A + i];
+
+                                // A = filename, B = filename length, X = seek, Y = length, C = output buffer
+                                ret = new SCRead(filename, registers.B, registers.X, registers.Y);
+                                break;
+                            }
+                            case WRITE:
+                            {
+                                // Pack filename
+                                char* filename = new char[registers.B];
+                                for(int i = 0; i < registers.B; i++) filename[i] = (char) ram[registers.A + i];
+
+                                // Pack write buffer
+                                char* contents = new char[registers.Y];
+                                for(int i = 0; i < registers.Y; i++) contents[i] = (char) ram[registers.X + i];
+
+                                // A = filename, B = file name length, C = seek
+                                // X = write buffer, Y = length
+                                ret = new SCWrite(filename, registers.B, registers.C, contents, registers.Y);
+                                break;
+                            }
 
                             case INPUT:     ret = new Syscall(Type::INPUT);     break;
                             case INPUTN:    ret = new Syscall(Type::INPUTN);    break;
-                            case END:       ret = new Syscall(Type::END);       break;
+                            case END:       ret = new SCInt(Type::END, registers.A);       break;
 
                             default:        ret = new Syscall(Type::NONE);      break;
                         }
