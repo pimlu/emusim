@@ -63,7 +63,20 @@ std::vector<T>& vecpq<T>::getVec() {
     return this->c;
 }
 
-using blockq = vecpq<ProcCall>;
+
+//using blockq = vecpq<ProcCall>;
+
+class blockq {
+public:
+    std::vector<ProcCall> data;
+    ProcCall top();
+    void pop(Scheduler *s);
+    void push(ProcCall pc);
+    bool remove(Process *p);
+    bool empty();
+    void clear();
+    std::vector<ProcCall> &getVec();
+};
 
 class System {
 public:

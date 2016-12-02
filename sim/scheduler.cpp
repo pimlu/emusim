@@ -91,12 +91,11 @@ void clearDeque(deque<T> q, V v) {
 }
 
 void Scheduler::remove(Process *p) {
+    if(!p) return;
     jobQueue.erase(std::remove(jobQueue.begin(), jobQueue.end(), p),
                    jobQueue.end());
     clearDeque(waitQueue, p);
-    system->blockQueue.remove_if([&](ProcCall e) {
-        return e.first == p;
-    });
+    system->blockQueue.remove(p);
     clearDeque(system->finishQueue, p);
     if(curProc.first == p) {
         delete curProc.second;

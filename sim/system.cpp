@@ -5,14 +5,60 @@ using std::priority_queue;
 
 using std::string;
 
+
+ProcCall blockq::top() {
+    return data[0];
+}
+
+void blockq::pop(Scheduler *sched) {
+    int best = 9999;
+    size_t besti = 0;
+
+    for(size_t i=0; i<data.size(); i++) {
+        int cur = sched->pcbs[data[i].first].priority;
+        if(cur<best) {
+            best = cur;
+            besti = i;
+        }
+    }
+    data.erase(data.begin()+besti);
+
+}
+
+void blockq::push(ProcCall pc) {
+    data.push_back(pc);
+}
+
+bool blockq::remove(Process *p) {
+    bool del = false;
+    for(size_t i=0; i<data.size(); i++) {
+        if(data[i].first == p) {
+            data.erase(data.begin()+i);
+            del = true;
+        }
+    }
+    return del;
+}
+bool blockq::empty() {
+    return data.size() == 0;
+}
+
+void blockq::clear() {
+    data.clear();
+}
+std::vector<ProcCall>& blockq::getVec() {
+    return data;
+}
+
+
 std::function<void(const char *s)> noop = [](const char *s) -> void { };
 
 System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path,
                std::function<void(const char *s)> &log = noop) :
                log(log), fs(path), memory(memory),in(in), out(out),
-               blockQueue([&](ProcCall a, ProcCall b) -> bool {
+               blockQueue(/*[&](ProcCall a, ProcCall b) -> bool {
                     return sched->pcbs[a.first].priority < sched->pcbs[b.first].priority;
-               }) {
+               }*/) {
     sched = new Scheduler(this, quantum);
 }
 
@@ -123,7 +169,7 @@ enum Type {
                 }break;
         }
         ret = true;
-        blockQueue.pop();
+        blockQueue.pop(this->sched);
         delete sc;
         if(res.first) finishQueue.push_back(res);
     }
@@ -141,7 +187,7 @@ int System::exec(std::string name) {
 }
 
 void System::reset() {
-    while(!blockQueue.empty()) blockQueue.pop();
+    blockQueue.clear();
     finishQueue.clear();
     usedMem = 0;
     sched->jobQueue.clear();
