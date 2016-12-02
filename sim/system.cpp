@@ -177,13 +177,13 @@ enum Type {
     return ret;
 }
 
-int System::exec(std::string name) {
+int System::exec(std::string name, int priority) {
     int len = fs.fileLen(name);
     if(!~len) return -1;
     char *data = fs.readFile(name, 0, len);
     if(!data) return -1;
     emu::EmuProcess *p = new emu::EmuProcess(data, len);
-    return sched->add(p, name);
+    return sched->add(p, name, priority);
 }
 
 void System::reset() {

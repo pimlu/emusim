@@ -35,7 +35,7 @@ public:
     unsigned long long cycle = 0;
     //runs scheduler for a fixed number of cycles
     int doSim(int n, bool &paused);
-    int add(sim::Process *p, std::string name);
+    int add(sim::Process *p, std::string name, int priority = 0);
     void remove(sim::Process *p);
     void remove(int pid);
     Process* find(int pid);

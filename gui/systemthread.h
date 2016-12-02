@@ -42,7 +42,7 @@ public:
     void remove(sim::Process *p);
     void remove(int pid);
     sim::Process* find(int pid);
-    int exec(std::string name);
+    int exec(std::string name, int priority = 0);
     int step(int n = 1);
     void reset();
     std::vector<ProcData> getProcs();

@@ -49,7 +49,7 @@ int Scheduler::doSim(int n, bool &paused) {
         pcbs[proc].cycles += spent;
         pcbs[proc].sample += spent;
         //cyclesLeft = 0; //ignores how much they spend for now
-        if(spent==0) system->out << "spent "<<spent<<std::endl;
+        //if(spent==0) system->out << "spent "<<spent<<std::endl;
         //run the kernel/system for the time we spent
         system->runSyscalls(spent);
         totalSim += spent;
@@ -76,10 +76,11 @@ int Scheduler::doSim(int n, bool &paused) {
     return totalSim;
 }
 
-int Scheduler::add(Process *p, std::string name) {
+int Scheduler::add(Process *p, std::string name, int priority) {
     jobQueue.push_back(p);
     pcbs[p] = PCB {};
     pcbs[p].name = name;
+    pcbs[p].priority = priority;
     return pcbs[p].pid = curpid++;
 }
 

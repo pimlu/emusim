@@ -188,10 +188,13 @@ void MainWindow::handleSendCommand()
         if(line.size() < 2) {
             log("No file given; run `load fileName`");
         } else {
+            int priority = 0;
+            if(line.size() >= 3) priority = line[2].toInt();
             std::string file = line[1].toUtf8().constData();
-            int pid = mainThread->exec(file);
+            int pid = mainThread->exec(file, priority);
             log(QString::fromStdString(pid == -1 ? "File "+file+" not found." : "Running "+
-                             file+" as PID "+std::to_string(pid)+"."));
+                             file+" as PID "+std::to_string(pid)+" with priority " +
+                                                   std::to_string(priority)+"."));
         }
     }
     else if(command == "kill")

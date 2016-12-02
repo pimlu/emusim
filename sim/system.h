@@ -86,7 +86,7 @@ public:
     std::function<void(const char *s)> &log;
     void addBlock(ProcCall pc);
     bool runSyscalls(int c); //passes time for the system, returns true if an entry finished
-    int exec(std::string name);
+    int exec(std::string name, int priority = 0);
     void reset();
     std::vector<ProcCall> getBlock();
     FileSystem fs;

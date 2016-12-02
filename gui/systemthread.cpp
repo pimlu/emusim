@@ -52,9 +52,9 @@ void SystemThread::remove(int pid) {
     ulock_recmtx lck(schedmtx);
     return system->sched->remove(pid);
 }
-int SystemThread::exec(std::string name) {
+int SystemThread::exec(std::string name, int priority) {
     ulock_recmtx lck(schedmtx);
-    return system->exec(name);
+    return system->exec(name, priority);
 }
 int SystemThread::step(int n) {
     ulock_recmtx lck(schedmtx);
