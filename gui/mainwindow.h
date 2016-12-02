@@ -25,6 +25,7 @@ private slots:
     void handlePPButton();
     void handleStepButton();
     void handleSendCommand();
+    void handleResetButton();
     void updateProcesses();
     void updateMemoryChart();
     void updateCPUChart();
@@ -38,6 +39,7 @@ private:
 
     QPushButton *m_pp_button;
     QPushButton *m_step_button;
+    QPushButton *m_reset_button;
     QPushButton *m_submitCommand;
     QTextEdit *m_commandOutput;
     QLineEdit *m_commandInput;

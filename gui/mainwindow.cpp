@@ -49,9 +49,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 
     m_step_button = new QPushButton("Step", term_tab);
-    m_step_button->setGeometry(QRect(QPoint(5, 500), QSize(775, 50)));
+    m_step_button->setGeometry(QRect(QPoint(5, 500), QSize(375, 50)));
     m_step_button->show();
     connect(m_step_button, SIGNAL (released()), this, SLOT (handleStepButton()));
+
+    m_reset_button = new QPushButton("Reset", term_tab);
+    m_reset_button->setGeometry(QRect(QPoint(400, 500), QSize(375, 50)));
+    m_reset_button->show();
+    connect(m_reset_button, SIGNAL (released()), this, SLOT (handleResetButton()));
 
 
     m_commandOutput = new QTextEdit(term_tab);
@@ -170,6 +175,10 @@ void MainWindow::handleStepButton() {
     if(!mainThread) throw std::runtime_error("mainThread is null");
     unsigned long long steps = mainThread->step(10);
     log(QString::fromStdString("Stepped "+std::to_string(steps)+" cycles."));
+}
+void MainWindow::handleResetButton() {
+    if(!mainThread) throw std::runtime_error("mainThread is null");
+    mainThread->reset();
 }
 
 void MainWindow::handleSendCommand()
