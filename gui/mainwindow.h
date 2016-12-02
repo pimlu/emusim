@@ -42,7 +42,7 @@ private:
     QLineEdit *m_commandInput;
 
     QtCharts::QChart *m_cpuUsage, *m_memUsage, *m_ioUsage;
-    int cpu_lastCount, io_lastCount;
+    int cpu_lastCount=0, io_lastCount=0;
 
     QTableView *table;
     QStandardItemModel *tModel;

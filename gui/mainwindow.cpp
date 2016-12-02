@@ -31,6 +31,7 @@ public:
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+
     setFixedSize(800,600);
     tabs = new QTabWidget(this);
     tabs->setGeometry(QRect(QPoint(5, 5), QSize(790, 580)));
