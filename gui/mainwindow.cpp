@@ -197,7 +197,7 @@ void MainWindow::handleSendCommand()
     else if(command == "kill")
     {
         if(line.size() < 2) {
-            log("No file given; run `load fileName`");
+            log("No pid given; run `kill pid`");
         } else {
             int pid = line[1].toInt();
             mainThread->remove(pid);
@@ -266,11 +266,12 @@ void MainWindow::handleSendCommand()
     }
     else if(command == "help")
     {
-        log("Current list of commands: PROC, MEM, LOAD, EXE, RESET, EXIT, INSPECT, HELP");
+        log("Current list of commands: PROC, MEM, LOAD, KILL, EXE, RESET, EXIT, INSPECT, HELP");
         log("");
         log("Special usages:");
         log("\t EXE, EXE <# of steps>");
         log("\t LOAD <binary name/file name>");
+        log("\t KILL <PID>");
         log("\t INSPECT <PID>");
     }
     else
