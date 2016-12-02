@@ -3,7 +3,7 @@
 #include "sim/syscalls.h"
 #include "emu/emuprocess.h"
 #include "sim/process.h"
-
+#include "emu/emuprocess.h"
 
 #include <stdexcept>
 #include <string>
@@ -239,13 +239,22 @@ void MainWindow::handleSendCommand()
     {
         exit(1);
     }
+    else if(command == "inspect")
+    {
+        if(line.size() < 2) log("Usage: INSPECT <PID>");
+        else
+        {
+            queryProcess(line[1].toInt());
+        }
+    }
     else if(command == "help")
     {
-        log("Current list of commands: PROC, MEM, LOAD, EXE, RESET, EXIT, HELP");
+        log("Current list of commands: PROC, MEM, LOAD, EXE, RESET, EXIT, INSPECT, HELP");
         log("");
         log("Special usages:");
         log("\t EXE, EXE <# of steps>");
         log("\t LOAD <binary name/file name>");
+        log("\t INSPECT <PID>");
     }
     else
     {
@@ -385,18 +394,35 @@ void MainWindow::updateProcesses() {
     table->sortByColumn(header->sortIndicatorSection(), header->sortIndicatorOrder());
 }
 //call this when someone queries a process
-void MainWindow::queryProcess() {
+void MainWindow::queryProcess(int pid)
+{
     ulock_recmtx lck = mainThread->getLock();
     sim::Scheduler *sched = mainThread->system->sched;
-    int pid = 0; //replace 0: reads from some text field
-    sim::Process *p = sched->find(pid);
-    if(!p) {
-        //process does not exist
-        return;
-    }
+    emu::EmuProcess *p = dynamic_cast<emu::EmuProcess*>(sched->find(pid));
+
+    // Check if process exists
+    if(!p) return;
+
     sim::PCB &pcb = sched->pcbs[p];
-    int memory = p->memory;
-    //do ALL of your UI reading and writing related to the process query in here
+
+    for(ProcData pd : mainThread->getProcs())
+    {
+        if(pd.pcb.pid == pid)
+        {
+            log(QString::fromUtf8(p->printRegisters()));
+            log(QString("Status: %1, Memory: %2, IO Requests: %3, Name: %4, Cycles Completed: %5")
+            .arg
+            (
+                    statuses[pd.status],
+                    QString::number(pd.memory),
+                    QString::number(pcb.ioreqs),
+                    QString::fromStdString(pd.pcb.name),
+                    QString::number(pcb.cycles)
+            ));
+
+            break;
+        }
+    }
 }
 
 }

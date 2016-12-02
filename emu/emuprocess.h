@@ -77,13 +77,6 @@ class EmuProcess : public Process
 
     short* convertToValue(int v, bool b, short* out);
 
-    void printRegisters()
-    {
-        printf("Registers: \t A: %d \t B: %d \t C: %d \t X: %d \t Y: %d \t Z: "
-               "%d \t I: %d \t J: %d \n", registers.A, registers.B, registers.C,
-               registers.X, registers.Y, registers.Z, registers.I, registers.J);
-    }
-
     public:
         EmuProcess(char *ram, int len);
         ~EmuProcess();
@@ -92,6 +85,19 @@ class EmuProcess : public Process
         Registers registers = {};
         Type lastCall = Type::NONE;
         bool skip_instruction = false;
+
+        char* printRegisters()
+        {
+            char *output = new char[100];
+
+
+            sprintf(output,
+                    "Registers: \t A: %d \t B: %d \t C: %d \t X: %d \t Y: %d \t Z: "
+                   "%d \t I: %d \t J: %d", registers.A, registers.B, registers.C,
+                   registers.X, registers.Y, registers.Z, registers.I, registers.J);
+
+            return output;
+        }
     };
 }
 
