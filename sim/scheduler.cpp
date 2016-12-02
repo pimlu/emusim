@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 
 namespace sim {
 
@@ -57,10 +58,13 @@ int Scheduler::doSim(int n, bool &paused) {
         while(!system->finishQueue.empty()) {
             ProcRes res = system->finishQueue.front();
             if(res.second->type == Type::END) {
-                system->out << "A process called " << pcbs[res.first].name
+                std::stringstream out;
+                out << "A process called " << pcbs[res.first].name
                             << " with pid " << pcbs[res.first].pid
                             << " just terminated after " << pcbs[res.first].cycles
-                            << " cycles." <<std::endl;
+                            << " cycles with return code "
+                            << ((SRInt*) res.second)->val << "." <<std::endl;
+                system->log(out.str().c_str());
                 pcbs.erase(res.first);
                 system->usedMem -= res.first->memory;
                 delete res.first;

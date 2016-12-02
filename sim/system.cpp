@@ -4,8 +4,11 @@ namespace sim {
 
 using std::string;
 
-System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path) :
-    fs(path), memory(memory), in(in), out(out) {
+std::function<void(const char *s)> noop = [](const char *s) -> void { };
+
+System::System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path,
+               std::function<void(const char *s)> &log = noop) :
+    log(log), fs(path), memory(memory), in(in), out(out) {
     sched = new Scheduler(this, quantum);
 }
 

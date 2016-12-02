@@ -1,5 +1,7 @@
 #include <QApplication>
+#include <QString>
 #include <iostream>
+#include <string>
 
 #include "sim/system.h"
 #include "gui/mainwindow.h"
@@ -15,14 +17,18 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    gui::MainWindow mainWindow;
+
     //sim::Process *p = new sim::DummyProcess(200);
-    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout, "data");
+    std::function<void(const char *s)> cb = [&] (const char *s) -> void {
+        mainWindow.log(QString::fromStdString(s));
+    };
+    sim::System *mainSystem = new sim::System(65536, 200, std::cin, std::cout, "data", cb);
 
 
     gui::SystemThread *mainThread = new gui::SystemThread(mainSystem, 10000);
     //mainThread->add(p, "dummy");
 
-    gui::MainWindow mainWindow;
     mainWindow.mainThread = mainThread;
     mainWindow.show();
 

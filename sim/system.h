@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <deque>
+#include <functional>
+#include <string>
 
 namespace sim { class System; }
 #include "scheduler.h"
@@ -11,12 +13,15 @@ namespace sim { class System; }
 
 namespace sim {
 
+
 using std::deque;
 
 class System {
 public:
-    System(int memory, int quantum, std::istream &in, std::ostream &out, std::string path);
+    System(int memory, int quantum, std::istream &in, std::ostream &out,
+           std::string path, std::function<void(const char *s)> &log);
     ~System();
+    std::function<void(const char *s)> &log;
     bool runSyscalls(int c); //passes time for the system, returns true if an entry finished
     int exec(std::string name);
     void reset();

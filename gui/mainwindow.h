@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void log(QString s) { m_commandOutput->append(s); }
     SystemThread *mainThread = nullptr;
 private slots:
     void handlePPButton();
@@ -30,7 +31,6 @@ private slots:
     void updateIOChart();
     void queryProcess();
 private:
-    void log(QString s) { m_commandOutput->append(s); }
 
     QTabWidget *tabs;
     QWidget *term_tab, *sys_tab, *top_tab, *proc_tab;
