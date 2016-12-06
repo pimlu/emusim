@@ -32,7 +32,7 @@ SET PC, test
 INT 4            ; printn syscall
 
                  ; print new line
-SET A, nl    ; address of string
+SET A, nl        ; address of string
 SET B, 1         ; length
 INT 2            ; print syscall
 
